@@ -1,0 +1,9 @@
+param b := 10;
+
+param s := 25;
+param r := 5;
+
+set scens := BELOW AVG ABOVE;
+param d := BELOW 55 AVG 139 ABOVE 141;
+
+param u := 150;

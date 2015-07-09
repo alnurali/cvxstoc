@@ -1,0 +1,37 @@
+set Stages := FirstStage SecondStage;
+
+set Nodes := RootNode
+             BelowAverageNode
+             AverageNode
+             AboveAverageNode;
+
+param NodeStage := RootNode            FirstStage
+                   BelowAverageNode    SecondStage
+                   AverageNode         SecondStage
+                   AboveAverageNode    SecondStage;
+
+set Children[RootNode] := BelowAverageNode
+                          AverageNode
+                          AboveAverageNode;
+
+param ConditionalProbability := RootNode         1.0
+                                BelowAverageNode 0.3
+                                AverageNode      0.6
+                                AboveAverageNode 0.1;
+
+set Scenarios := BelowAverageScenario
+                 AverageScenario
+                 AboveAverageScenario;
+
+param ScenarioLeafNode :=
+      BelowAverageScenario    BelowAverageNode
+      AverageScenario         AverageNode
+      AboveAverageScenario    AboveAverageNode;
+
+set StageVariables[FirstStage] := x;
+set StageVariables[SecondStage] := y1
+                                   y2;
+
+param StageCostVariable :=
+      FirstStage     FirstStageCost
+      SecondStage    SecondStageCost;
