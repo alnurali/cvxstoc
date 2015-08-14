@@ -1,7 +1,0 @@
-name: cvxstoc
-highlighter: pygments
-baseurl: /cvxstoc
-pages_list:       
-  About: '/index.html'
-  Archive: '/index.html'
-  Feed: '/index.html'
