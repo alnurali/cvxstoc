@@ -38,7 +38,7 @@ class RandomVariableFactory:
         rv_pymc = None
         if cont:
             rv_pymc = pymc.Uniform(name=rv_name, lower=lower, upper=upper, size=shape)
-        else:        
+        else:
             rv_pymc = pymc.DiscreteUniform(name=rv_name, lower=lower, upper=upper, size=shape)
 
         metadata = {}
@@ -64,7 +64,7 @@ class RandomVariableFactory:
                 val_map[val] = vals[val]
         metadata["vals"] = vals
         metadata["probs"] = probs
-        
+
         return RandomVariable(rv=rv_pymc, val_map=val_map, metadata=metadata)
 
     def create_normal_rv(self, mu, cov, shape=1):
@@ -91,16 +91,16 @@ class RandomVariableFactory:
         return RandomVariable(rv=rv_pymc, metadata=metadata)
 
     def get_rv_name(self):
-        return "rv" + str(RandomVariableFactory.get_next_avail_id())    
+        return "rv" + str(RandomVariableFactory.get_next_avail_id())
 
     @staticmethod
     def get_next_avail_id():
         RandomVariableFactory._id += 1
         return RandomVariableFactory._id
 
-    
-class RandomVariable(cvxpy.expressions.constants.constant.Constant):
-    
+
+class RandomVariable(cvxpy.expressions.constants.parameter.Parameter):
+
     def __init__(self, rv=None, model=None, name=None, val_map=None, metadata=None): # model == pymc.Model object
 
         if name is not None:
@@ -113,10 +113,9 @@ class RandomVariable(cvxpy.expressions.constants.constant.Constant):
         self.set_rv_model_and_maybe_name(rv, model)
 
         self.set_shape()
-        
-        self._val = None        
-        self._sparse = False        
-        self.init_dcp_attr()
+
+        rows, cols = self._shape.size
+        super(RandomVariable, self).__init__(rows, cols, self._name)
 
     @property
     def mean(self):
@@ -129,17 +128,17 @@ class RandomVariable(cvxpy.expressions.constants.constant.Constant):
             self._model = pymc.Model([self._rv])
 
             self._name = self._rv.__name__
-            
+
         elif rv is not None and model is not None:
             self._rv = rv
             self._model = model
 
-            self._name = self._rv.__name__            
-        
+            self._name = self._rv.__name__
+
         elif rv is None and model is not None:
 
             self._model = model
-            
+
             self._rv = None
             for pymc_variable in self._model.variables:
                 if pymc_variable.__name__ == self._name:
@@ -153,7 +152,7 @@ class RandomVariable(cvxpy.expressions.constants.constant.Constant):
                         # Success
                     else: # Failure
                         raise Exception(strings.UNSUPPORTED_PYMC_RV)
-                            
+
                     self._rv = pymc_variable
                     break
 
@@ -169,7 +168,7 @@ class RandomVariable(cvxpy.expressions.constants.constant.Constant):
         if self.has_val_map():
 
             val = self._val_map.values()[0]
-            
+
             if isinstance(val, int) or isinstance(val, float):
                 shape = (1,1)
 
@@ -187,7 +186,7 @@ class RandomVariable(cvxpy.expressions.constants.constant.Constant):
                 raise Exception(strings.BAD_VAL_MAP)
 
         else:
-            
+
             pymc_shape = ()
             if isinstance(self._rv, pymc.CompletedDirichlet):
                 pymc_shape = self._rv.parents["D"].shape
@@ -203,7 +202,7 @@ class RandomVariable(cvxpy.expressions.constants.constant.Constant):
             else:
                 raise Exception(strings.BAD_RV_DIMS)
 
-        self._shape = utilities.Shape(*shape)                
+        self._shape = utilities.Shape(*shape)
 
     # Start overrides
     def name(self):
@@ -211,19 +210,6 @@ class RandomVariable(cvxpy.expressions.constants.constant.Constant):
             return self._name
         else:
             return str(self.value)
-    
-    @property
-    def value(self):
-        return self._val
-
-    def canonicalize(self):
-        obj = cvxpy.lin_ops.lin_utils.create_const(self.value, self.size, self._sparse) # Copied from cvxpy.expressions.constants.Constant::canonicalize()
-        return (obj, [])
-    
-    def init_dcp_attr(self):
-        self._sign = utilities.Sign.UNKNOWN
-        self._curvature = utilities.Curvature.CONSTANT        
-        self._dcp_attr = utilities.DCPAttr(self._sign, self._curvature, self._shape)
 
     def __repr__(self):
         return "RandomVariable(%s, %s, %s)" % (self.curvature, self.sign, self.size)
@@ -240,33 +226,18 @@ class RandomVariable(cvxpy.expressions.constants.constant.Constant):
                               name=self.name(),
                               val_map=self._val_map,
                               metadata=self._metadata)
+
     # End overrides
-        
-    @value.setter
-    def value(self, val):
-        
-        if interface.is_sparse(val):
-            self._val = interface.DEFAULT_SPARSE_INTERFACE.const_to_matrix(val)
-            self._sparse = True
-        else:
-            self._val = interface.DEFAULT_INTERFACE.const_to_matrix(val)
-            self._sparse = False
-            
-        
-        self._sign = interface.sign(self.value)
-        self._shape = utilities.Shape(*interface.size(self.value))
-        self._dcp_attr = utilities.DCPAttr(self._sign, self._curvature, self._shape)
 
     def sample(self, num_samples, num_burnin_samples=0):
 
         if num_samples == 0:
             return [None]
-        
-        
+
+
         mcmc = pymc.MCMC(self._model)
         mcmc.sample(num_samples, num_burnin_samples, progress_bar=False)
         samples = mcmc.trace(self._name)[:]
-
 
         if not self.has_val_map():
             return samples

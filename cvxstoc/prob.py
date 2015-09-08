@@ -31,7 +31,7 @@ class prob:
             self.alpha = NonNegative(1)
 
     def __le__(self, beta):
-        constr_rearranged = self.constr.rh_exp - self.constr.lh_exp # Note: constr.rh_exp <==> f(x) and constr.lh_exp <==> g(x) in the "Note" above
+        constr_rearranged = self.constr.args[1] - self.constr.args[0] # Note: constr.rh_exp <==> f(x) and constr.lh_exp <==> g(x) in the "Note" above
         self.conservative = expectation(max_elemwise(0.0, constr_rearranged + self.alpha), self.num_samples)
 
         if self.phi == Phi.HINGE:
