@@ -6,6 +6,7 @@ from cvxpy.constraints import *
 
 from expectation import expectation
 from expectation import clamp_or_sample_rvs
+from utils import replace_rand_vars
 import strings
 
 import math
@@ -43,12 +44,12 @@ class prob:
         if self.phi == Phi.HINGE:
             return self.conservative.value / self.alpha.value # Note: the returned value here is an *upper bound* on Prob( f(x) >= 0 ), and it should be  <= beta
         else:
-            constr_rearranged = self.constr.lh_exp - self.constr.rh_exp
+            constr_rearranged = self.constr.args[0] - self.constr.args[1]
 
             true_cnt = 0.0
             rvs2samples, ignore = clamp_or_sample_rvs(constr_rearranged, rvs2samples={}, want_de=False, want_mf=False, num_samples=self.num_samples, num_burnin_samples=0)
             for s in range(self.num_samples):
-                constr_rearranged_copy = copy.deepcopy(constr_rearranged)
+                constr_rearranged_copy = replace_rand_vars(constr_rearranged)
                 constr_rearranged_copy_rlzd = clamp_or_sample_rvs(constr_rearranged_copy, rvs2samples, want_de=False, want_mf=False, sample_idx=s)
                 if constr_rearranged_copy_rlzd.value <= 0:
                     true_cnt += 1.0

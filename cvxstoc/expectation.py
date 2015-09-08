@@ -5,6 +5,7 @@ import cvxpy.expressions.types
 from cvxpy.transforms.partial_optimize import PartialProblem
 
 from random_variable import RandomVariable
+from utils import replace_rand_vars
 
 def expectation(expr, num_samples=0, want_de=False, want_mf=False, num_burnin_samples=0):
     if want_de:
@@ -47,7 +48,7 @@ def get_all_poss_combs_of_rv_realizations(rvs):
 
 def construct_mean_field(expr):
     rvs2samples, rvs = clamp_or_sample_rvs(expr, rvs2samples={}, want_de=False, want_mf=True, num_samples=0, num_burnin_samples=0)
-    return clamp_or_sample_rvs(copy.deepcopy(expr), rvs2samples, want_de=False, want_mf=True, num_samples=0, num_burnin_samples=0)
+    return clamp_or_sample_rvs(replace_rand_vars(expr), rvs2samples, want_de=False, want_mf=True, num_samples=0, num_burnin_samples=0)
 
 def construct_det_equiv(expr):
 
@@ -65,7 +66,7 @@ def construct_det_equiv(expr):
         mul_exprs = []
         for s in range(num_combs):
 
-            expr_copy = copy.deepcopy(expr)
+            expr_copy = replace_rand_vars(expr)
             expr_copy_realized = clamp_or_sample_rvs(expr_copy, rvs2samples, want_de=True, want_mf=False, sample_idxes=combs[s,:])
 
 
@@ -98,17 +99,14 @@ def construct_saa(expr, num_samples, num_burnin_samples):
         mul_exprs = []
         for s in range(num_samples-num_burnin_samples):
 
-            expr_copy = copy.deepcopy(expr) # Deep copy expr (num_samples times)
+            expr_copy = replace_rand_vars(expr) # Deep copy expr (num_samples times)
             expr_copy_realized = clamp_or_sample_rvs(expr_copy, rvs2samples, want_de=False, want_mf=False, sample_idx=s) # Plug in a realization of each RandomVariable
-
-            prob = cvxpy.expressions.types.constant()(1.0/(num_samples-num_burnin_samples))
-
-            expr_copy_realized_scaled = cvxpy.expressions.types.mul_expr()(prob, expr_copy_realized)
-            mul_exprs.append(expr_copy_realized_scaled)
+            prob = 1.0/(num_samples-num_burnin_samples)
+            mul_exprs.append(prob*expr_copy_realized)
 
 
         # Return an AddExpression using all the realized deep copies to the caller
-        return cvxpy.expressions.types.add_expr()(mul_exprs)
+        return sum(mul_exprs)
 
 def clamp_or_sample_rvs(expr, rvs2samples={}, want_de=None, want_mf=None, num_samples=None, num_burnin_samples=None, sample_idx=None, sample_idxes=None):
 

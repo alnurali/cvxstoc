@@ -53,88 +53,88 @@ class TestChanceConstr(unittest.TestCase):
         # print "Prob( exp(omega) <= 0.5 ) = %f." % prob(event, num_samples, Phi.NONE).get_prob()
         self.assertAlmostEqual(1,1)
 
-    def test_robust_svm(self):
-        # Create problem data
-        m = 100 # num train points
-        m_pos = math.floor(m/2)
-        m_neg = m - m_pos
+    # def test_robust_svm(self):
+    #     # Create problem data
+    #     m = 100 # num train points
+    #     m_pos = math.floor(m/2)
+    #     m_neg = m - m_pos
 
-        n = 2 # num dimensions
-        mu_pos = 2*numpy.ones(n)
-        mu_neg = -2*numpy.ones(n)
-        sigma = 1
-        X = numpy.matrix(numpy.vstack((mu_pos + sigma*numpy.random.randn(m_pos,n), mu_neg + sigma*numpy.random.randn(m_neg,n))))
+    #     n = 2 # num dimensions
+    #     mu_pos = 2*numpy.ones(n)
+    #     mu_neg = -2*numpy.ones(n)
+    #     sigma = 1
+    #     X = numpy.matrix(numpy.vstack((mu_pos + sigma*numpy.random.randn(m_pos,n), mu_neg + sigma*numpy.random.randn(m_neg,n))))
 
-        y = numpy.hstack((numpy.ones(m_pos), -1*numpy.ones(m_neg)))
+    #     y = numpy.hstack((numpy.ones(m_pos), -1*numpy.ones(m_neg)))
 
-        C = 1 # regularization trade-off parameter
-        ns = 50
-        eta = 0.1
+    #     C = 1 # regularization trade-off parameter
+    #     ns = 50
+    #     eta = 0.1
 
-        # Create and solve optimization problem
-        w, b, xi = Variable(n), Variable(), NonNegative(m)
+    #     # Create and solve optimization problem
+    #     w, b, xi = Variable(n), Variable(), NonNegative(m)
 
-        constr = []
-        Sigma = 0.1*numpy.eye(n)
-        for i in range(m):
-            mu = numpy.array(X[i])[0]
-            x = RandomVariableFactory().create_normal_rv(mu, Sigma)
-            chance = prob(-y[i]*(w.T*x+b) >= (xi[i]-1), ns)
-            constr += [chance <= eta]
+    #     constr = []
+    #     Sigma = 0.1*numpy.eye(n)
+    #     for i in range(m):
+    #         mu = numpy.array(X[i])[0]
+    #         x = RandomVariableFactory().create_normal_rv(mu, Sigma)
+    #         chance = prob(-y[i]*(w.T*x+b) >= (xi[i]-1), ns)
+    #         constr += [chance <= eta]
 
-        p = Problem(Minimize(norm(w,2) + C*sum_entries(xi)),
-                     constr)
-        p.solve()
+    #     p = Problem(Minimize(norm(w,2) + C*sum_entries(xi)),
+    #                  constr)
+    #     p.solve()
 
-        w_new = w.value
-        b_new = b.value
+    #     w_new = w.value
+    #     b_new = b.value
 
-        # print p.value
-        # print w_new
-        # print b_new
+    #     # print p.value
+    #     # print w_new
+    #     # print b_new
 
-        # Create and solve the canonical SVM problem
-        constr = []
-        for i in range(m):
-            constr += [y[i]*(X[i]*w+b) >= (1-xi[i])]
+    #     # Create and solve the canonical SVM problem
+    #     constr = []
+    #     for i in range(m):
+    #         constr += [y[i]*(X[i]*w+b) >= (1-xi[i])]
 
-        p2 = Problem(Minimize(norm(w,2) + C*sum_entries(xi)), constr)
-        p2.solve()
+    #     p2 = Problem(Minimize(norm(w,2) + C*sum_entries(xi)), constr)
+    #     p2.solve()
 
-        w_old = w.value
-        b_old = b.value
+    #     w_old = w.value
+    #     b_old = b.value
 
-        # print p2.value
-        # print w_old
-        # print b_old
+    #     # print p2.value
+    #     # print w_old
+    #     # print b_old
 
-        # Plot solutions
-        if n == 2:
+    #     # Plot solutions
+    #     if n == 2:
 
-            fig = pyplot.figure()
-            pyplot.rc("text", usetex=True)
+    #         fig = pyplot.figure()
+    #         pyplot.rc("text", usetex=True)
 
-            pyplot.plot(X[:m_pos-1, 0], X[:m_pos-1, 1], 'bo')
-            pyplot.plot(X[m_pos:, 0], X[m_pos:, 1], 'ro')
+    #         pyplot.plot(X[:m_pos-1, 0], X[:m_pos-1, 1], 'bo')
+    #         pyplot.plot(X[m_pos:, 0], X[m_pos:, 1], 'ro')
 
-            x_vals = numpy.arange(numpy.min(X[:,0]), numpy.max(X[:,0]), 0.1)
+    #         x_vals = numpy.arange(numpy.min(X[:,0]), numpy.max(X[:,0]), 0.1)
 
-            intercept = -b_old / w_old[1]
-            slope = -w_old[0] / w_old[1]
-            y_vals = numpy.array(slope*x_vals + intercept)[0]
-            pyplot.plot(x_vals, y_vals, "--k", label="SVM")
+    #         intercept = -b_old / w_old[1]
+    #         slope = -w_old[0] / w_old[1]
+    #         y_vals = numpy.array(slope*x_vals + intercept)[0]
+    #         pyplot.plot(x_vals, y_vals, "--k", label="SVM")
 
-            intercept = -b_new / w_new[1]
-            slope = -w_new[0] / w_new[1]
-            y_vals = numpy.array(slope*x_vals + intercept)[0]
-            pyplot.plot(x_vals, y_vals, ":k", label="Chance Constrained SVM")
+    #         intercept = -b_new / w_new[1]
+    #         slope = -w_new[0] / w_new[1]
+    #         y_vals = numpy.array(slope*x_vals + intercept)[0]
+    #         pyplot.plot(x_vals, y_vals, ":k", label="Chance Constrained SVM")
 
-            pyplot.legend(loc="upper left")
-            pyplot.axis("off")
-            # pyplot.show() # Note: the user must manually close the plot window for the unit test to proceed
-            fig.savefig("test_svm.png", bbox_inches="tight")
+    #         pyplot.legend(loc="upper left")
+    #         pyplot.axis("off")
+    #         # pyplot.show() # Note: the user must manually close the plot window for the unit test to proceed
+    #         fig.savefig("test_svm.png", bbox_inches="tight")
 
-        self.assert_feas(p)
+    #     self.assert_feas(p)
 
     def test_value_at_risk(self):
         # Create problem data
