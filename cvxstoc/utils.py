@@ -18,7 +18,7 @@ def replace_rand_vars(obj):
     """
     if isinstance(obj, RandomVariable):
         return copy.deepcopy(obj)
-    # Leaves outside of optimized variables are preserved.
+    # Leaves other than random variables are preserved.
     elif len(obj.args) == 0:
         return obj
     elif isinstance(obj, PartialProblem):

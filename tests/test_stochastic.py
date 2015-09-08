@@ -76,8 +76,8 @@ class TestStochastic(unittest.TestCase):
 
         # Create problem data
         b, s, r, u = 10, 25, 5, 150
-        d_probs = [0.3, 0.6, 0.1]
-        d_vals = [55, 139, 141]
+        d_probs = [0.5, 0.5]#[0.3, 0.6, 0.1]
+        d_vals = [55, 139]
         d = RandomVariableFactory().create_categorical_rv(d_vals, d_probs)
 
         # Create optimization variables

@@ -75,14 +75,9 @@ def construct_det_equiv(expr):
                 idx  = int(combs[s,i])
                 prob *= rv._metadata["probs"][idx]
 
-            prob = cvxpy.expressions.types.constant()(prob)
+            mul_exprs.append(prob*expr_copy_realized)
 
-
-            expr_copy_realized_scaled = cvxpy.expressions.types.mul_expr()(prob, expr_copy_realized)
-            mul_exprs.append(expr_copy_realized_scaled)
-
-
-        return cvxpy.expressions.types.add_expr()(mul_exprs)
+        return sum(mul_exprs)
 
 def construct_saa(expr, num_samples, num_burnin_samples):
 
@@ -142,8 +137,9 @@ def clamp_or_sample_rvs(expr, rvs2samples={}, want_de=None, want_mf=None, num_sa
 
                 if want_de:
                     idx = int(sample_idxes[rv_ctr])
+                    print cur_expr.value
                     cur_expr.value = cur_expr._metadata["vals"][idx]
-
+                    print cur_expr.value
                     rv_ctr += 1
                 elif want_mf:
                     cur_expr.value = cur_expr.mean
@@ -153,11 +149,10 @@ def clamp_or_sample_rvs(expr, rvs2samples={}, want_de=None, want_mf=None, num_sa
         else:
 
             if isinstance(cur_expr, PartialProblem):
-                my_queue.put(ExpectationQueueItem(cur_expr.args[0].objective.args[0]))
+                my_queue.put(ExpectationQueueItem(cur_expr.args[0].objective))
 
                 for constr in cur_expr.args[0].constraints:
-                    my_queue.put(ExpectationQueueItem(constr.args[0]))
-                    my_queue.put(ExpectationQueueItem(constr.args[1]))
+                    my_queue.put(ExpectationQueueItem(constr))
 
             else:
                 for arg in cur_expr.args:
