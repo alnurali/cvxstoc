@@ -203,7 +203,7 @@ class TestStochastic(unittest.TestCase):
     def test_dc_power(self):
 
         # Load problem data
-        fp = "/Users/alnurali/shared_code/cvxpy/cvxpy/cvxpy/stochastic/pf_dc/pf_dc.mat"
+        fp = "pf_dc/pf_dc.mat"
         data = scipy.io.loadmat(fp)
 
         A = data.get("A")
