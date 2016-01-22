@@ -10,3 +10,6 @@
 /boneyard/
 /slides/
 /poster/
+dist/*
+build/*
+cvxstoc.egg-info/*
