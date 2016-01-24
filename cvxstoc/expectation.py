@@ -137,9 +137,7 @@ def clamp_or_sample_rvs(expr, rvs2samples={}, want_de=None, want_mf=None, num_sa
 
                 if want_de:
                     idx = int(sample_idxes[rv_ctr])
-                    print cur_expr.value
                     cur_expr.value = cur_expr._metadata["vals"][idx]
-                    print cur_expr.value
                     rv_ctr += 1
                 elif want_mf:
                     cur_expr.value = cur_expr.mean
