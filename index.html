@@ -49,7 +49,7 @@
 <div class="section" id="what-can-i-do-with-cvxstoc">
 <h2>What can I do with cvxstoc?<a class="headerlink" href="#what-can-i-do-with-cvxstoc" title="Permalink to this headline">¶</a></h2>
 <p>Here is a quick example of the kinds of problems you can tackle with cvxstoc (see the <a class="reference external" href="walkthru.html">gentle walkthrough</a> for more examples).</p>
-<p>Suppose we are interested in a stochastic variation on the usual <a class="reference external" href="https://en.wikipedia.org/wiki/Portfolio_optimization">portfolio optimization</a> problem, i.e., we wish to allocate our wealth across <span class="math">\(n\)</span> assets such that the returns on our investments are maximized, so long as we keep the probability of a (catastrophic) loss as low as possible; we model our investment choices as a vector <span class="math">\(x \in {\bf R}^n_+\)</span> (we require that the components of <span class="math">\(x\)</span> sum to one), the (uncertain) price change of each asset as a vector <span class="math">\(p \in {\bf R}^n \sim \textrm{Normal}(\mu, \Sigma)\)</span> for simplicity, and our loss threshold and tolerance as <span class="math">\(\alpha , \beta\)</span>, respectively (typically, <span class="math">\(\alpha\)</span> will be negative and <span class="math">\(\beta\)</span> will be small, e.g., 0.05).</p>
+<p>Suppose we are interested in a stochastic variation on the usual <a class="reference external" href="https://en.wikipedia.org/wiki/Portfolio_optimization">portfolio optimization</a> problem, i.e., we wish to allocate our wealth across <span class="math">\(n\)</span> assets such that the returns on our investments are (on average) maximized, so long as we keep the probability of a (catastrophic) loss as low as possible; we model our investment choices as a vector <span class="math">\(x \in {\bf R}^n_+\)</span> (we require that the components of <span class="math">\(x\)</span> sum to one), the (uncertain) price change of each asset as a vector <span class="math">\(p \in {\bf R}^n \sim \textrm{Normal}(\mu, \Sigma)\)</span> for simplicity, and our loss threshold and tolerance as <span class="math">\(\alpha , \beta\)</span>, respectively (typically, <span class="math">\(\alpha\)</span> is negative and <span class="math">\(\beta\)</span> is small, e.g., 0.05).</p>
 <p>These considerations lead us to the following (convex) optimization problem:</p>
 <div class="math" id="equation-portopt">
 <span class="eqno">(1)</span>\[\begin{split}\begin{equation}
@@ -169,6 +169,22 @@
 
     
 
+    
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-37400115-2']);
+      _gaq.push(['_setDomainName', 'none']);
+      _gaq.push(['_setAllowLinker', true]);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
     
   </body>
 </html>
