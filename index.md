@@ -29,10 +29,11 @@ Prerequisites:
 
 # How do I install cvxstoc?
 
-On a Mac:
+On Mac OS X:
 
 1. Follow the [instructions](http://www.cvxpy.org/en/latest/install/) for installing cvxpy.
-2. From the command line, type: pip install cvxstoc
+2. From the terminal, type: <span style="font-family:courier;">pip install cvxstoc</span> (note: doing this will install [PyMC](https://pymc-devs.github.io/pymc/), which cvxstoc depends on)
+3. Done!
 
 # What can I do with cvxstoc?
 
@@ -49,7 +50,6 @@ omega = NormalRandomVariable(0, 1)
 Now, intuitively, we might [expect](https://en.wikipedia.org/wiki/Law_of_large_numbers#Weak_law) that as we average more and more samples of this random variable (i.e., we compute $$\omega$$'s sample mean on larger and larger samples), the sample mean will converge to zero.  In cvxstoc, we can compute the sample mean like this (repeating some of the previous code):
 
 {% highlight python %}
-import cvxpy as cvx
 from cvxstoc import NormalRandomVariable, expectation
 omega = NormalRandomVariable(0, 1)
 sample_mean = expectation(omega, 100).value
@@ -73,10 +73,10 @@ In cvxstoc, we can compute this like so (by appealing to the [Central Limit Theo
 
 {% highlight python %}
 from cvxstoc import NormalRandomVariable, expectation, prob
-omega = NormalRandomVariable(0, 1)             # Not used, just here for reference
-sample_mean = NormalRandomVariable(0, 1.0/100) # This is the samp. dist. of the sample mean
+omega = NormalRandomVariable(0, 1)                          # Not used, just here for reference
+sample_mean = NormalRandomVariable(0, 1.0/100)              # This is the samp. dist. of the sample mean
 bound = prob(0 <= sample_mean, 1000).value
-print bound                                    # Get something close to 0.5, as expected
+print bound                                                 # Get something close to 0.5, as expected
 {% endhighlight %}
 
 Here, `prob` takes in a (convex) inequality (or equality), draws samples of the random variable in question (1000 samples, in this case), evaluates the inequality on the basis of the samples, averages the results (just as in our experiments with the expected value from earlier), and (finally) returns a scalar; in other words
@@ -89,13 +89,13 @@ where $$1(\cdot)$$ denotes the zero/one indicator function (one if its argument 
 
 Let's combine all these ideas and code our first stochastic optimization problem using cvxstoc.
 
-Suppose we run a factory that makes toys from $$n$$ different kinds of raw materials.  We would like to decide how much of each different kind of raw material to order, which we model as a vector $$x \in {\bf R}^n$$, so that our ordering cost $$c^T x$$, where $$c \in {\bf R}^n$$ is a constant, is minimized, so long as we don't exceed our factory's ordering budget, i.e., $$x$$ lies in some set of allowable values $$S$$.  Suppose further that our ordering process is error-prone: We may receive raw materials $$x + \omega$$, where $$\omega \in {\bf R}^n$$ is some random vector, even if we place an order for just $$x$$; thus, we can express our wish to not exceed our factory's budget as
+Suppose we run a factory that makes toys from $$n$$ different kinds of raw materials.  We would like to decide how much of each different kind of raw material to order, which we model as a vector $$x \in {\bf R}^n$$, so that our ordering cost $$c^T x$$, where $$c \in {\bf R}^n$$ is a constant, is minimized, so long as we don't exceed our factory's ordering budget, i.e., $$x$$ lies in some set of allowable values $$S$$.  Suppose further that our ordering process is error-prone: We may actually receive raw materials $$x + \omega$$, where $$\omega \in {\bf R}^n$$ is some random vector, even if we place an order for just $$x$$.  Thus, we can express our wish to not exceed our factory's budget as
 
 \begin{equation}
 {\bf Prob}(x+\omega \in S) \geq \eta, \label{eq:chance}
 \end{equation}
 
-where $$\eta$$ is a large probability (e.g., 0.95).  Note that \eqref{eq:chance} is similar to \eqref{eq:event}; in general, \eqref{eq:chance} is referred to as a *[chance constraint](http://stanford.edu/class/ee364a/lectures/chance_constr.pdf)* (although, in this context, \eqref{eq:chance} is more often referred to as an *$$\eta$$-yield constraint*).  This leads us to the following optimization problem:
+where $$\eta$$ is a large probability (e.g., 0.95).  Note that \eqref{eq:chance} is similar to \eqref{eq:event}; in general, \eqref{eq:chance} is referred to as a *[chance constraint](http://stanford.edu/class/ee364a/lectures/chance_constr.pdf)* (although, in this context, \eqref{eq:chance} is more often referred to as an *$$\eta$$-yield constraint*).  Putting these considerations together leads us to the following optimization problem for choosing $$x$$:
 
 \begin{equation}
 \begin{array}{ll}
@@ -111,10 +111,10 @@ We can directly express \eqref{eq:yield} using cvxstoc as follows (let's take $$
 
 {% highlight python %}
 from cvxstoc import NormalRandomVariable, prob
-import numpy
 from cvxpy.atoms import *
 from cvxpy.expressions.variables import Variable
 from cvxpy import Minimize, Problem
+import numpy
 
 # Create problem data.
 n = 10
@@ -178,7 +178,6 @@ Note that $$Q$$ here is itself the optimal value of *another* convex optimizatio
 A cvxstoc implementation of \eqref{eq:news1}-\eqref{eq:news2} is as follows:
 
 {% highlight python %}
-import cvxpy as cvx
 from cvxpy import Minimize, Problem
 from cvxpy.expressions.variables import Variable, NonNegative
 from cvxpy.transforms import partial_optimize
