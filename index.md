@@ -13,7 +13,7 @@ title: cvxstoc
 
 # What is cvxstoc? <!-- <span style="font-family:Courier">cvxstoc</span> -->
 
-cvxstoc is a Python package that makes it easy to code and solve [convex optimization problems](http://stanford.edu/class/ee364a/lectures/intro.pdf) that include random variables.
+cvxstoc is a Python package that makes it easy to code and solve stochastic optimization problems, i.e., [convex optimization problems](http://stanford.edu/class/ee364a/lectures/intro.pdf) that include random variables.
 
 Here, we'll go over:
 
@@ -32,7 +32,7 @@ Prerequisites:
 On a Mac:
 
 1. Follow the [instructions](http://www.cvxpy.org/en/latest/install/) for installing cvxpy.
-2. ...
+2. From the command line, type: pip install cvxstoc
 
 # What can I do with cvxstoc?
 
@@ -151,7 +151,7 @@ where $$f_i : {\bf R}^n \times {\bf R}^q \rightarrow {\bf R}, \; i=0,\ldots,m$$ 
 
 ## Example: the news vendor problem
 
-Let's now consider a different problem.
+Let's now consider a different problem (cf. page 16 in Birge 2011).
 
 Suppose we sell newspapers.  Each morning, we must decide how many newspapers $$x \in [0,b]$$ to acquire, where $$b$$ is our budget (e.g., the maximum number of newspapers we can store); later in the day, we will sell $$y \in {\bf R}_+$$ of these newspapers at a (fixed) price of $$s \in {\bf R}_+$$ dollars per newspaper, and return the rest ($$z \in {\bf R}_+$$) to our supplier at a (fixed) income of $$r \in {\bf R}_+$$, in a proportion that is dictated by the amount of (uncertain) demand $$d \sim \mathrm{Categorical}$$.  We can model our decision-making process by the following optimization problem:
 \begin{equation}
