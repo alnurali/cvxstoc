@@ -1,0 +1,144 @@
+Gentle walkthrough
+==================
+
+Here, we walk through some basic scenarios that hint at what you can accomplish with cvxstoc; more advanced scenarios are described in the cvxstoc `paper <http://stanford.edu/~boyd/papers/dcsp.html>`_.
+
+Some prerequisites:
+
+- You've taken a `course <https://youtu.be/McLq1hEq3UY?list=PL3940DD956CDF0622>`_ in convex optimization.
+- You've seen some probability and statistics.
+- You've seen some `cvxpy <http://cvxpy.readthedocs.org/en/latest/>`_ code.
+
+Random variables, expectations, and events
+------------------------------------------
+
+Suppose we're interested in a random variable :math:`\omega\sim \textrm{Normal}(0, 1)`, i.e., :math:`\omega` is a standard normal random variable.
+
+In cvxstoc, we can declare this random variable like so:
+
+.. literalinclude:: ../walkthru_code/walkthru_code.py
+   :language: python
+   :lines: 4,18
+
+Now, intuitively, we might `expect <https://en.wikipedia.org/wiki/Law_of_large_numbers#Weak_law>`_ that as we average over more and more samples of this random variable (i.e., we compute :math:`\omega`'s sample mean over larger and larger samples), the sample mean will converge to zero.  Let's try to confirm this intuition using cvxstoc.
+
+In cvxstoc, we can compute the sample mean like so (repeating some of the previous code for clarity):
+
+.. literalinclude:: ../walkthru_code/walkthru_code.py
+   :language: python
+   :lines: 4,18-19
+
+Here, "100" specifies the number of samples to use when computing the sample mean --- we could have specified any natural number instead.  As might be expected, ``sample_mean`` stores the (scalar) sample mean.
+
+Indeed, if we execute this code for various values of the number of samples to use, and plot the resulting ``sample_mean`` values, we get this (confirming our intuition):
+
+.. image:: ../walkthru_code/fig.png
+   :align: center
+
+From this plot, we can see that the sample mean occasionally jumps above zero; so, one thing we might be further curious about is the probability that the sample mean (as a function of the number of samples) indeed lies above zero, i.e.,
+
+.. math::
+   {\bf Prob}( 0 \leq \textrm{sample_mean} ).
+   :label: event
+
+In cvxstoc, we can compute this like so (by appealing to the `Central Limit Theorem <http://www.stat.cmu.edu/~larry/=stat705/Lecture4.pdf>`_ as well as repeating some of the previous code):
+
+.. literalinclude:: ../walkthru_code/walkthru_code.py
+   :language: python
+   :lines: 5,44-47
+
+Here, ``prob`` takes in a (convex) inequality, draws samples of the random variable in question (1000 samples, in this case), evaluates the inequality on the basis of the samples, averages the results (just as in our experiments with the expected value from earlier), and (finally) returns a scalar; in other words
+
+.. math::
+   \textrm{bound} = \frac{1}{1000} \sum_{i=1}^{1000} 1( 0 \leq \textrm{sample_mean}_i ),
+
+where :math:`1(\cdot)` denotes the zero/one indicator function (one if its argument is true, zero otherwise) and :math:`\textrm{sample_mean}_i` denotes the :math:`i` th sample of the ``sample_mean`` random variable.
+
+Yield-constrained cost minimization
+-----------------------------------
+
+Let's combine all these ideas and code our first stochastic optimization problem using cvxstoc.
+
+Suppose we run a factory that makes toys from :math:`n` different kinds of raw materials.  We would like to decide how much of each different kind of raw material to order, which we model as a vector :math:`x \in {\bf R}^n`, so that our ordering cost :math:`c^T x`, where :math:`c \in {\bf R}^n` is a constant, is minimized, so long as we don't exceed our factory's ordering budget, i.e., :math:`x` lies in some set of allowable values :math:`S`.  Suppose further that our ordering process is error-prone: We may actually receive raw materials :math:`x + \omega`, where :math:`\omega \in {\bf R}^n` is some random vector, even if we place an order for just :math:`x`.  Thus, we can express our wish to not exceed our factory's budget as
+
+.. math::
+   {\bf Prob}(x+\omega \in S) \geq \eta,
+   :label: chance 
+
+where :math:`\eta` is a large probability, e.g., 0.95.  Note that :eq:`chance` is similar to :eq:`event`; in general, :eq:`chance` is referred to as a `chance constraint <http://stanford.edu/class/ee364a/lectures/chance_constr.pdf>`_ (although in this context :eq:`chance` is more often referred to as an :math:`\eta`-yield constraint).  Putting these considerations together leads us to the following optimization problem for choosing :math:`x`:
+
+.. math::
+   \begin{equation}
+   \begin{array}{ll}
+   \mbox{minimize} & c^T x \\
+   \mbox{subject to} & {\bf Prob}(x+\omega \in S) \geq \eta
+   \end{array}
+   \end{equation}
+   :label: yield
+
+with variable :math:`x`.
+
+We can directly express :eq:`yield` using cvxstoc as follows (for simplicity, let's take :math:`\omega \sim \textrm{Normal}(\mu, \Sigma)`, and :math:`S` to be an `ellipsoid <http://ee263.stanford.edu/lectures/ellipsoids.pdf>`_):
+
+.. literalinclude:: ../walkthru_code/walkthru_code2.py
+   :language: python
+
+(Much of the syntax for creating and solving the optimization problem follows from `cvxpy <http://cvxpy.readthedocs.org/en/latest/>`_.)
+
+Stochastic optimization problems
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+More generally, cvxstoc can handle *convex stochastic optimization problems*, i.e., optimization problems of the form
+
+.. math::
+   \begin{equation}
+   \begin{array}{ll}
+   \mbox{minimize} & \mathop{\bf E{}} f_0(x,\omega) \\
+   \mbox{subject to} & \mathop{\bf E{}} f_i(x,\omega) \leq 0, \quad i=1,\ldots,m \\
+   & h_i(x) = 0, \quad i=1,\ldots,p,
+   \end{array}
+   \end{equation}
+   :label: sp
+
+where :math:`f_i : {\bf R}^n \times {\bf R}^q \rightarrow {\bf R}, \; i=0,\ldots,m` are convex functions in :math:`x` for each value of a random variable :math:`\omega \in {\bf R}^q`, and :math:`h_i : {\bf R}^n \rightarrow {\bf R}, \; i=1,\ldots,p` are (deterministic) affine functions; since expectations preserve convexity, the objective and inequality constraint functions in :eq:`sp` are (also) convex in :math:`x`, making :eq:`sp` a convex optimization problem.  See Chaps. 3-4 of `Convex Optimization <http://web.stanford.edu/~boyd/cvxbook/>`_ if you need more background here.
+
+Note that cvxstoc handles manipulating problems behind the scenes into standard form so you don't have to, and also checks convexity by leveraging the `disciplined convex programming framework <http://dcp.stanford.edu/>`_.
+
+The news vendor problem
+-----------------------
+
+Let's now consider a different problem (cf. page 16 in this `book <http://www.springer.com/us/book/9781461402367>`_).
+
+Suppose we sell newspapers.  Each morning, we must decide how many newspapers :math:`x \in [0,b]` to acquire, where :math:`b` is our budget, e.g., the maximum number of newspapers we can store; later in the day, we will sell :math:`y \in {\bf R}_+` of these newspapers at a (fixed) price of :math:`s \in {\bf R}_+` dollars per newspaper, and return the rest (:math:`z \in {\bf R}_+`) to our supplier at a (fixed) income of :math:`r \in {\bf R}_+`, in a proportion that is dictated by the amount of (uncertain) demand :math:`d \in {\bf R}_+ \sim \textrm{Categorical}`.  We can model our decision-making process by the following optimization problem:
+
+.. math::
+   \begin{equation}
+   \begin{array}{ll}
+   \mbox{minimize} & cx + \mathop{\bf E{}} Q(x,d) \\
+   \mbox{subject to} & 0 \leq x \leq b, %\notag
+   \end{array}
+   \end{equation}
+   :label: news1
+
+where
+
+.. math::
+   \begin{equation}
+   \begin{array}{lll}
+   Q(x,d) \; = & \underset{y, z}{\min} & -(sy + rz) \\
+   & \textrm{s.t. } & 0 \leq y + z \leq x \\ %\notag
+   & & 0 \leq y, z \leq d %\notag
+   \end{array}
+   \end{equation}
+   :label: news2
+
+with variable :math:`x`.
+
+Note that :math:`Q` here is itself the optimal value of *another* convex optimization problem.  The problem in :eq:`news1`-:eq:`news2` is referred to as a `two-stage stochastic optimization problem <https://en.wikipedia.org/wiki/Stochastic_programming#Two-Stage_Problems>`_: :eq:`news1` is referred to as the *first stage problem*, while :eq:`news2` is referred to as the *second stage problem*.
+
+A cvxstoc implementation of :eq:`news1`-:eq:`news2` is as follows:
+
+.. literalinclude:: ../walkthru_code/walkthru_code3.py
+   :language: python
+
+Here, ``partial_optimize`` takes in a convex optimization ``Problem`` and a list of ``Variable`` s to optimize over --- in this case, ``partial_optimize`` is given the (second stage) ``Problem`` named ``p2`` and told to optimize (only) over the (second stage) variables ``y`` and ``z``.
