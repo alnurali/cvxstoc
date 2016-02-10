@@ -11,14 +11,12 @@ import cvxpy.expressions.constants.constant, cvxpy.lin_ops.lin_utils
 
 
 class RandomVariableFactory:
-
     _id = 0
 
     def __init__(self):
         pass
 
-    def create_dirichlet_rv(self, alpha): # Note: alpha here is in R_+^K <==> x is in R^K ~ Dir(alpha)
-
+    def create_dirichlet_rv(self, alpha):                   # Note: alpha here is in R_+^K <==> x is in R^K ~ Dir(alpha)
         rv_inner_name = self.get_rv_name()
         rv_outer_name = self.get_rv_name()
 
@@ -32,7 +30,6 @@ class RandomVariableFactory:
         return RandomVariable(rv=rv_pymc, metadata=metadata)
 
     def create_unif_rv(self, lower=0, upper=1, cont=True, shape=1):
-
         rv_name = self.get_rv_name()
 
         rv_pymc = None
@@ -50,7 +47,6 @@ class RandomVariableFactory:
         return RandomVariable(rv=rv_pymc, metadata=metadata)
 
     def create_categorical_rv(self, vals=None, probs=None, shape=1):
-
         rv_name = self.get_rv_name()
 
         rv_pymc = pymc.Categorical(name=rv_name, p=list(probs), size=shape)
@@ -59,7 +55,7 @@ class RandomVariableFactory:
         metadata["mu"] = len(probs) * numpy.asarray(probs)
 
         val_map = {}
-        if vals: # True when vals != None && vals != []
+        if vals:                                            # True when vals != None && vals != []
             for val in range(0, len(probs)):
                 val_map[val] = vals[val]
         metadata["vals"] = vals
@@ -68,7 +64,6 @@ class RandomVariableFactory:
         return RandomVariable(rv=rv_pymc, val_map=val_map, metadata=metadata)
 
     def create_normal_rv(self, mu, cov, shape=1):
-
         rv_name = self.get_rv_name()
 
         rv_pymc = None
@@ -98,11 +93,14 @@ class RandomVariableFactory:
         RandomVariableFactory._id += 1
         return RandomVariableFactory._id
 
+def NormalRandomVariable(mu, cov, shape=1):
+    return RandomVariableFactory().create_normal_rv(mu, cov, shape)
+
+def CategoricalRandomVariable(vals, probs, shape=1):
+    return RandomVariableFactory().create_categorical_rv(vals, probs, shape)
 
 class RandomVariable(cvxpy.expressions.constants.parameter.Parameter):
-
-    def __init__(self, rv=None, model=None, name=None, val_map=None, metadata=None): # model == pymc.Model object
-
+    def __init__(self, rv=None, model=None, name=None, val_map=None, metadata=None):        # model == pymc.Model object
         if name is not None:
             self._name = name
 
@@ -122,7 +120,6 @@ class RandomVariable(cvxpy.expressions.constants.parameter.Parameter):
         return self._metadata["mu"]
 
     def set_rv_model_and_maybe_name(self, rv, model):
-
         if rv is not None and model is None:
             self._rv = rv
             self._model = pymc.Model([self._rv])
@@ -145,12 +142,13 @@ class RandomVariable(cvxpy.expressions.constants.parameter.Parameter):
                     if isinstance(pymc_variable, pymc.CompletedDirichlet):
                         if pymc_variable.parents["D"].observed:
                             continue
-                        # Success
+                        # Success.
                     elif hasattr(pymc_variable, "observed"):
                         if pymc_variable.observed:
                             continue
-                        # Success
-                    else: # Failure
+                        # Success.
+                     # Failure.
+                    else:
                         raise Exception(strings.UNSUPPORTED_PYMC_RV)
 
                     self._rv = pymc_variable
@@ -163,10 +161,8 @@ class RandomVariable(cvxpy.expressions.constants.parameter.Parameter):
             raise Exception(strings.DIDNT_PASS_EITHER_RV_OR_MODEL)
 
     def set_shape(self):
-
         shape = ()
         if self.has_val_map():
-
             val = self._val_map.values()[0]
 
             if isinstance(val, int) or isinstance(val, float):
@@ -186,7 +182,6 @@ class RandomVariable(cvxpy.expressions.constants.parameter.Parameter):
                 raise Exception(strings.BAD_VAL_MAP)
 
         else:
-
             pymc_shape = ()
             if isinstance(self._rv, pymc.CompletedDirichlet):
                 pymc_shape = self._rv.parents["D"].shape
@@ -204,36 +199,36 @@ class RandomVariable(cvxpy.expressions.constants.parameter.Parameter):
 
         self._shape = utilities.Shape(*shape)
 
-    # Start overrides
     def name(self):
+        # Override.
         if self.value is None:
             return self._name
         else:
             return str(self.value)
 
     def __repr__(self):
+        # Override.
         return "RandomVariable(%s, %s, %s)" % (self.curvature, self.sign, self.size)
 
     def __eq__(self, rv):
+        # Override.
         return self._name == rv._name
 
     def __hash__(self):
+        # Override.
         return hash(self._name)
 
     def __deepcopy__(self, memo):
+        # Override.
         return self.__class__(rv=self._rv,
                               model=self._model,
                               name=self.name(),
                               val_map=self._val_map,
                               metadata=self._metadata)
 
-    # End overrides
-
     def sample(self, num_samples, num_burnin_samples=0):
-
         if num_samples == 0:
             return [None]
-
 
         mcmc = pymc.MCMC(self._model)
         mcmc.sample(num_samples, num_burnin_samples, progress_bar=False)

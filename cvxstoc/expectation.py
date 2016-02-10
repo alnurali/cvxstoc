@@ -7,6 +7,7 @@ from cvxpy.transforms.partial_optimize import PartialProblem
 from random_variable import RandomVariable
 from utils import replace_rand_vars
 
+
 def expectation(expr, num_samples=0, want_de=False, want_mf=False, num_burnin_samples=0):
     if want_de:
         return construct_det_equiv(expr)
@@ -16,7 +17,6 @@ def expectation(expr, num_samples=0, want_de=False, want_mf=False, num_burnin_sa
         return construct_saa(expr, num_samples, num_burnin_samples)
 
 def get_all_poss_combs_of_rv_realizations(rvs):
-
     num_rvs = len(rvs)
     num_combs = 1
     for rv in rvs:
@@ -47,28 +47,29 @@ def get_all_poss_combs_of_rv_realizations(rvs):
     return idx_combs
 
 def construct_mean_field(expr):
-    rvs2samples, rvs = clamp_or_sample_rvs(expr, rvs2samples={}, want_de=False, want_mf=True, num_samples=0, num_burnin_samples=0)
-    return clamp_or_sample_rvs(replace_rand_vars(expr), rvs2samples, want_de=False, want_mf=True, num_samples=0, num_burnin_samples=0)
+    rvs2samples, rvs = clamp_or_sample_rvs(expr, rvs2samples={}, want_de=False, want_mf=True, num_samples=0,
+                                           num_burnin_samples=0)
+
+    return clamp_or_sample_rvs(replace_rand_vars(expr), rvs2samples, want_de=False, want_mf=True, num_samples=0,
+                               num_burnin_samples=0)
 
 def construct_det_equiv(expr):
-
-    rvs2samples, rvs = clamp_or_sample_rvs(expr, rvs2samples={}, want_de=True, want_mf=False, num_samples=0, num_burnin_samples=0)
+    rvs2samples, rvs = clamp_or_sample_rvs(expr, rvs2samples={}, want_de=True, want_mf=False, num_samples=0,
+                                           num_burnin_samples=0)
 
     if not rvs2samples.keys():
         return expr
 
     else:
-
         combs = get_all_poss_combs_of_rv_realizations(rvs)
         num_combs = combs.shape[0]
-
 
         mul_exprs = []
         for s in range(num_combs):
 
             expr_copy = replace_rand_vars(expr)
-            expr_copy_realized = clamp_or_sample_rvs(expr_copy, rvs2samples, want_de=True, want_mf=False, sample_idxes=combs[s,:])
-
+            expr_copy_realized = clamp_or_sample_rvs(expr_copy, rvs2samples, want_de=True, want_mf=False,
+                                                     sample_idxes=combs[s,:])
 
             prob = 1
             for i, rv in enumerate(rvs):
@@ -80,48 +81,42 @@ def construct_det_equiv(expr):
         return sum(mul_exprs)
 
 def construct_saa(expr, num_samples, num_burnin_samples):
+    # Get samples of each RandomVariable in expr.
+    rvs2samples, ignore = clamp_or_sample_rvs(expr, rvs2samples={}, want_de=False, want_mf=False,
+                                              num_samples=num_samples, num_burnin_samples=num_burnin_samples)
 
-    # Get samples of each RandomVariable in expr
-    rvs2samples, ignore = clamp_or_sample_rvs(expr, rvs2samples={}, want_de=False, want_mf=False, num_samples=num_samples, num_burnin_samples=num_burnin_samples)
-
-    # If expr contained no RandomVariables, we're done
+    # If expr contained no RandomVariables, we're done.
     if not rvs2samples.keys():
         return expr
 
-    # Else expr contained RandomVariables
+    # Else expr contained RandomVariables.
     else:
-
         mul_exprs = []
         for s in range(num_samples-num_burnin_samples):
 
-            expr_copy = replace_rand_vars(expr) # Deep copy expr (num_samples times)
-            expr_copy_realized = clamp_or_sample_rvs(expr_copy, rvs2samples, want_de=False, want_mf=False, sample_idx=s) # Plug in a realization of each RandomVariable
+            expr_copy = replace_rand_vars(expr)                         # Deep copy expr (num_samples times)
+            expr_copy_realized = clamp_or_sample_rvs(expr_copy, rvs2samples, want_de=False, want_mf=False, sample_idx=s)
+                                                                        # Plug in a realization of each RandomVariable
             prob = 1.0/(num_samples-num_burnin_samples)
             mul_exprs.append(prob*expr_copy_realized)
 
-
-        # Return an AddExpression using all the realized deep copies to the caller
+        # Return an AddExpression using all the realized deep copies to the caller.
         return sum(mul_exprs)
 
-def clamp_or_sample_rvs(expr, rvs2samples={}, want_de=None, want_mf=None, num_samples=None, num_burnin_samples=None, sample_idx=None, sample_idxes=None):
-
-    # Walk expr and "process" each RandomVariable
-
+def clamp_or_sample_rvs(expr, rvs2samples={}, want_de=None, want_mf=None, num_samples=None, num_burnin_samples=None,
+                        sample_idx=None, sample_idxes=None):
+    # Walk expr and "process" each RandomVariable.
     if not rvs2samples.keys():
         draw_samples = True
     else:
         draw_samples = False
 
-
     my_queue = Queue.Queue()
     my_queue.put(ExpectationQueueItem(expr))
 
     rvs = []
-
     rv_ctr = 0
-
     while True:
-
         queue_item = my_queue.get()
         cur_expr = queue_item._item
         if isinstance(cur_expr, RandomVariable):
@@ -134,7 +129,6 @@ def clamp_or_sample_rvs(expr, rvs2samples={}, want_de=None, want_mf=None, num_sa
                     rvs2samples[cur_expr] = samples
 
             else:
-
                 if want_de:
                     idx = int(sample_idxes[rv_ctr])
                     cur_expr.value = cur_expr._metadata["vals"][idx]
@@ -145,7 +139,6 @@ def clamp_or_sample_rvs(expr, rvs2samples={}, want_de=None, want_mf=None, num_sa
                     cur_expr.value = rvs2samples[cur_expr][sample_idx]
 
         else:
-
             if isinstance(cur_expr, PartialProblem):
                 my_queue.put(ExpectationQueueItem(cur_expr.args[0].objective))
 
@@ -158,7 +151,6 @@ def clamp_or_sample_rvs(expr, rvs2samples={}, want_de=None, want_mf=None, num_sa
 
         if my_queue.empty():
             break
-
 
     if draw_samples:
         return rvs2samples, rvs
