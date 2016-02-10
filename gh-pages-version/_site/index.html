@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>cvxstoc</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/cvxstoc/stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="/cvxstoc/stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/cvxstoc/stylesheets/github-light.css" media="screen">
+    <!-- For Python code highlighting, following SiddharthaRT's answer here http://stackoverflow.com/questions/13464590/github-flavored-markdown-and-pygments-highlighting-in-jekyll -->
+    <link rel="stylesheet" type="text/css" href="/cvxstoc/stylesheets/style.css" media="screen">
+    <!-- For MathJaX -->
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- For eq. numbering w/ MathJaX -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+      TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <!-- TODO: Google Analytics code goes here -->
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">cvxstoc</h1>
+      <h2 class="project-tagline">Disciplined Convex Stochastic Programming</h2>
+      <a href="https://github.com/alnurali/cvxstoc" class="btn">View on GitHub</a>
+      <a href="https://github.com/alnurali/cvxstoc/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/alnurali/cvxstoc/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+    
+    <section class="main-content">
+
+<div class="nav">
+<ul>
+<li>&bull; <a href="#what-is-cvxstoc">Overview</a></li>
+<li>&bull; <a href="#how-do-i-install-cvxstoc">Install</a></li>
+<li>&bull; <a href="#what-can-i-do-with-cvxstoc">Tutorial</a></li>
+<li>&bull; <a href="#where-can-i-learn-more">Questions?</a></li>
+</ul>
+</div>
+
+<h1 id="what-is-cvxstoc----span-stylefont-familycouriercvxstocspan---">What is cvxstoc? <!-- <span style="font-family:Courier">cvxstoc</span> --></h1>
+
+<p>cvxstoc is a Python package that makes it easy to code and solve stochastic optimization problems, i.e., <a href="http://stanford.edu/class/ee364a/lectures/intro.pdf">convex optimization problems</a> that include random variables.</p>
+
+<p>Here, we’ll go over:</p>
+
+<ul>
+  <li>How you can <a href="#how-do-i-install-cvxstoc">install</a> cvxstoc.</li>
+  <li>What you can <a href="#what-can-i-do-with-cvxstoc">do</a> with cvxstoc (including examples).</li>
+  <li>Where you can <a href="#where-can-i-learn-more">learn</a> more.</li>
+</ul>
+
+<p>Prerequisites:</p>
+
+<ul>
+  <li>You’ve taken <a href="https://youtu.be/McLq1hEq3UY?list=PL3940DD956CDF0622">a course in convex optimization</a>.</li>
+  <li>You’ve seen some probability and statistics.</li>
+  <li>You’ve seen some <a href="http://cvxpy.readthedocs.org/en/latest/">cvxpy</a> code.</li>
+</ul>
+
+<h1 id="how-do-i-install-cvxstoc">How do I install cvxstoc?</h1>
+
+<p>On Mac OS X:</p>
+
+<ol>
+  <li>Follow the <a href="http://www.cvxpy.org/en/latest/install/">instructions</a> for installing cvxpy.</li>
+  <li>From the terminal, type: <span style="font-family:courier;">pip install cvxstoc</span> (note: doing this will install <a href="https://pymc-devs.github.io/pymc/">PyMC</a>, which cvxstoc depends on)</li>
+  <li>Done!</li>
+</ol>
+
+<h1 id="what-can-i-do-with-cvxstoc">What can I do with cvxstoc?</h1>
+
+<p>Here, we walk through some basic scenarios that hint at what you can accomplish with cvxstoc; more advanced scenarios are detailed in the cvxstoc <a href="http://stanford.edu/~boyd/papers/dcsp.html">paper</a>.</p>
+
+<h2 id="random-variables-expectations-and-events">Random variables, expectations, and events</h2>
+<p>Suppose we’re interested in a random variable <script type="math/tex">\omega\sim \mathrm{Normal}(0, 1)</script> (i.e., <script type="math/tex">\omega</script> is a standard normal random variable).  In cvxstoc, we can declare this random variable like so:</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">cvxstoc</span> <span class="kn">import</span> <span class="n">NormalRandomVariable</span>
+<span class="n">omega</span> <span class="o">=</span> <span class="n">NormalRandomVariable</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></code></pre></div>
+
+<p>Now, intuitively, we might <a href="https://en.wikipedia.org/wiki/Law_of_large_numbers#Weak_law">expect</a> that as we average more and more samples of this random variable (i.e., we compute <script type="math/tex">\omega</script>’s sample mean on larger and larger samples), the sample mean will converge to zero.  In cvxstoc, we can compute the sample mean like this (repeating some of the previous code):</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">cvxstoc</span> <span class="kn">import</span> <span class="n">NormalRandomVariable</span><span class="p">,</span> <span class="n">expectation</span>
+<span class="n">omega</span> <span class="o">=</span> <span class="n">NormalRandomVariable</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">sample_mean</span> <span class="o">=</span> <span class="n">expectation</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">value</span></code></pre></div>
+
+<p>Here, “100” specifies the number of samples to use when computing the sample mean — we could have specified any (natural) number instead.  As might be expected, <code>sample_mean</code> stores the (scalar) sample mean.</p>
+
+<p>Indeed, if we execute this code for various values of the number of samples to use and plot the resulting <code>sample_mean</code> values, we get (as expected):</p>
+
+<div style="text-align:center">
+  <p><img src="fig.png" alt="fig.png" /></p>
+</div>
+
+<p>We can see that the sample mean occasionally jumps above zero — so, one thing we might be curious about is the probability that the sample mean (as a function of the number of samples) indeed lies above zero, i.e.,</p>
+
+<p>\begin{equation}
+{\bf Prob}( 0 \leq \textrm{sample_mean} ). \label{eq:event}
+\end{equation}</p>
+
+<p>In cvxstoc, we can compute this like so (by appealing to the <a href="http://www.stat.cmu.edu/~larry/=stat705/Lecture4.pdf">Central Limit Theorem</a> as well as repeating some of the previous code):</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">cvxstoc</span> <span class="kn">import</span> <span class="n">NormalRandomVariable</span><span class="p">,</span> <span class="n">expectation</span><span class="p">,</span> <span class="n">prob</span>
+<span class="n">omega</span> <span class="o">=</span> <span class="n">NormalRandomVariable</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>                          <span class="c"># Not used, just here for reference</span>
+<span class="n">sample_mean</span> <span class="o">=</span> <span class="n">NormalRandomVariable</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="o">/</span><span class="mi">100</span><span class="p">)</span>              <span class="c"># This is the samp. dist. of the sample mean</span>
+<span class="n">bound</span> <span class="o">=</span> <span class="n">prob</span><span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">sample_mean</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+<span class="k">print</span> <span class="n">bound</span>                                                 <span class="c"># Get something close to 0.5, as expected</span></code></pre></div>
+
+<p>Here, <code>prob</code> takes in a (convex) inequality (or equality), draws samples of the random variable in question (1000 samples, in this case), evaluates the inequality on the basis of the samples, averages the results (just as in our experiments with the expected value from earlier), and (finally) returns a scalar; in other words</p>
+
+<script type="math/tex; mode=display">\mathrm{bound} = \frac{1}{1000} \sum_{i=1}^{1000} 1( 0 \leq \mathrm{sample\_mean}_i ),</script>
+
+<p>where <script type="math/tex">1(\cdot)</script> denotes the zero/one indicator function (one if its argument is true, zero otherwise) and <script type="math/tex">\mathrm{sample\_mean}_i</script> denotes the <script type="math/tex">i</script>th sample of the <code>sample_mean</code> random variable.</p>
+
+<h2 id="example-yield-constrained-cost-minimization">Example: yield-constrained cost minimization</h2>
+
+<p>Let’s combine all these ideas and code our first stochastic optimization problem using cvxstoc.</p>
+
+<p>Suppose we run a factory that makes toys from <script type="math/tex">n</script> different kinds of raw materials.  We would like to decide how much of each different kind of raw material to order, which we model as a vector <script type="math/tex">x \in {\bf R}^n</script>, so that our ordering cost <script type="math/tex">c^T x</script>, where <script type="math/tex">c \in {\bf R}^n</script> is a constant, is minimized, so long as we don’t exceed our factory’s ordering budget, i.e., <script type="math/tex">x</script> lies in some set of allowable values <script type="math/tex">S</script>.  Suppose further that our ordering process is error-prone: We may actually receive raw materials <script type="math/tex">x + \omega</script>, where <script type="math/tex">\omega \in {\bf R}^n</script> is some random vector, even if we place an order for just <script type="math/tex">x</script>.  Thus, we can express our wish to not exceed our factory’s budget as</p>
+
+<p>\begin{equation}
+{\bf Prob}(x+\omega \in S) \geq \eta, \label{eq:chance}
+\end{equation}</p>
+
+<p>where <script type="math/tex">\eta</script> is a large probability (e.g., 0.95).  Note that \eqref{eq:chance} is similar to \eqref{eq:event}; in general, \eqref{eq:chance} is referred to as a <em><a href="http://stanford.edu/class/ee364a/lectures/chance_constr.pdf">chance constraint</a></em> (although, in this context, \eqref{eq:chance} is more often referred to as an <em><script type="math/tex">\eta</script>-yield constraint</em>).  Putting these considerations together leads us to the following optimization problem for choosing <script type="math/tex">x</script>:</p>
+
+<p>\begin{equation}
+\begin{array}{ll}
+\mbox{minimize} &amp; c^T x \newline
+\mbox{subject to} &amp; {\bf Prob}(x+\omega \in S) \geq \eta
+\end{array}
+\label{eq:yield}
+\end{equation}</p>
+
+<p>with variable <script type="math/tex">x</script>.</p>
+
+<p>We can directly express \eqref{eq:yield} using cvxstoc as follows (let’s take <script type="math/tex">S</script> to be an <a href="http://ee263.stanford.edu/lectures/ellipsoids.pdf">ellipsoid</a> for simplicity):</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">cvxstoc</span> <span class="kn">import</span> <span class="n">NormalRandomVariable</span><span class="p">,</span> <span class="n">prob</span>
+<span class="kn">from</span> <span class="nn">cvxpy.atoms</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">cvxpy.expressions.variables</span> <span class="kn">import</span> <span class="n">Variable</span>
+<span class="kn">from</span> <span class="nn">cvxpy</span> <span class="kn">import</span> <span class="n">Minimize</span><span class="p">,</span> <span class="n">Problem</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="c"># Create problem data.</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="n">P</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span>
+<span class="n">mu</span><span class="p">,</span> <span class="n">Sigma</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="mf">0.1</span><span class="o">*</span><span class="n">numpy</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="n">omega</span> <span class="o">=</span> <span class="n">NormalRandomVariable</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">Sigma</span><span class="p">)</span>
+<span class="n">m</span><span class="p">,</span> <span class="n">eta</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="mf">0.95</span>
+
+<span class="c"># Create and solve stochastic optimization problem.</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="n">yield_constr</span> <span class="o">=</span> <span class="n">prob</span><span class="p">(</span><span class="n">quad_form</span><span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="n">omega</span><span class="p">,</span><span class="n">P</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="n">omega</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="o">*</span><span class="n">q</span> <span class="o">+</span> <span class="n">r</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="o">-</span><span class="n">eta</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">Problem</span><span class="p">(</span><span class="n">Minimize</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="o">*</span><span class="n">c</span><span class="p">),</span> <span class="p">[</span><span class="n">yield_constr</span><span class="p">])</span>
+<span class="n">p</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span></code></pre></div>
+
+<p>(Much of the syntax for creating and solving the optimization problem follows from <a href="http://cvxpy.readthedocs.org/en/latest/">cvxpy</a>.)</p>
+
+<h3 id="stochastic-optimization-problems">Stochastic optimization problems</h3>
+
+<p>More generally, cvxstoc can handle <em>convex stochastic optimization problems</em>, i.e., optimization problems of the form</p>
+
+<p>\begin{equation}
+\begin{array}{ll}
+\mbox{minimize} &amp; \mathop{\bf E{}} f_0(x,\omega) \newline
+\mbox{subject to} &amp; \mathop{\bf E{}} f_i(x,\omega) \leq 0, \quad i=1,\ldots,m \newline
+&amp; h_i(x) = 0, \quad i=1,\ldots,p,
+\end{array}
+\label{eq:sp}
+\end{equation}
+where <script type="math/tex">f_i : {\bf R}^n \times {\bf R}^q \rightarrow {\bf R}, \; i=0,\ldots,m</script> are convex functions in <script type="math/tex">x</script> for each value of a random variable <script type="math/tex">\omega \in {\bf R}^q</script>, and <script type="math/tex">h_i : {\bf R}^n \rightarrow {\bf R}, \; i=1,\ldots,p</script> are (deterministic) affine functions; since expectations preserve convexity, the objective and inequality constraint functions in \eqref{eq:sp} are (also) convex in <script type="math/tex">x</script>, making \eqref{eq:sp} a convex optimization problem.  (See Chaps. 3-4 of <a href="http://web.stanford.edu/~boyd/cvxbook/">Convex Optimization</a> if you need more background here.)</p>
+
+<p>(Note that cvxstoc handles manipulating problems behind the scenes into standard form so you don’t have to, and also checks convexity by leveraging the <a href="http://dcp.stanford.edu/">disciplined convex programming framework</a>.)</p>
+
+<h2 id="example-the-news-vendor-problem">Example: the news vendor problem</h2>
+
+<p>Let’s now consider a different problem (cf. page 16 in Birge 2011).</p>
+
+<p>Suppose we sell newspapers.  Each morning, we must decide how many newspapers <script type="math/tex">x \in [0,b]</script> to acquire, where <script type="math/tex">b</script> is our budget (e.g., the maximum number of newspapers we can store); later in the day, we will sell <script type="math/tex">y \in {\bf R}_+</script> of these newspapers at a (fixed) price of <script type="math/tex">s \in {\bf R}_+</script> dollars per newspaper, and return the rest (<script type="math/tex">z \in {\bf R}_+</script>) to our supplier at a (fixed) income of <script type="math/tex">r \in {\bf R}_+</script>, in a proportion that is dictated by the amount of (uncertain) demand <script type="math/tex">d \sim \mathrm{Categorical}</script>.  We can model our decision-making process by the following optimization problem:
+\begin{equation}
+\begin{array}{ll}
+	\mbox{minimize} &amp; cx + \mathop{\bf E{}} Q(x,d) \newline
+	\mbox{subject to} &amp; 0 \leq x \leq b, %\notag
+\end{array}
+\label{eq:news1}
+\end{equation}</p>
+
+<p>\begin{equation}
+\begin{array}{lll}
+	\textrm{where } Q(x,d) \; = &amp; \underset{y, z}{\min} &amp; -(sy + rz) \newline
+	&amp; \textrm{s.t. } &amp; 0 \leq y + z \leq x \ %\notag \newline
+	&amp; &amp; 0 \leq y, z \leq d %\notag
+\end{array}
+\label{eq:news2}
+\end{equation}</p>
+
+<p>with variable <script type="math/tex">x</script>.</p>
+
+<p>Note that <script type="math/tex">Q</script> here is itself the optimal value of <em>another</em> convex optimization problem.  The problem in \eqref{eq:news1}-\eqref{eq:news2} is referred to as a <em><a href="https://en.wikipedia.org/wiki/Stochastic_programming#Two-Stage_Problems">two-stage stochastic optimization problem</a></em>: \eqref{eq:news1} is referred to as the <em>first stage problem</em>, while \eqref{eq:news2} is referred to as the <em>second stage problem</em>.</p>
+
+<p>A cvxstoc implementation of \eqref{eq:news1}-\eqref{eq:news2} is as follows:</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">cvxpy</span> <span class="kn">import</span> <span class="n">Minimize</span><span class="p">,</span> <span class="n">Problem</span>
+<span class="kn">from</span> <span class="nn">cvxpy.expressions.variables</span> <span class="kn">import</span> <span class="n">Variable</span><span class="p">,</span> <span class="n">NonNegative</span>
+<span class="kn">from</span> <span class="nn">cvxpy.transforms</span> <span class="kn">import</span> <span class="n">partial_optimize</span>
+<span class="kn">from</span> <span class="nn">cvxstoc</span> <span class="kn">import</span> <span class="n">expectation</span><span class="p">,</span> <span class="n">prob</span><span class="p">,</span> <span class="n">CategoricalRandomVariable</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="c"># Create problem data.</span>
+<span class="n">c</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">150</span>
+<span class="n">d_probs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span> <span class="c"># [0.3, 0.6, 0.1]</span>
+<span class="n">d_vals</span> <span class="o">=</span> <span class="p">[</span><span class="mi">55</span><span class="p">,</span> <span class="mi">139</span><span class="p">]</span> <span class="c"># [55, 139, 141]</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">CategoricalRandomVariable</span><span class="p">(</span><span class="n">d_vals</span><span class="p">,</span> <span class="n">d_probs</span><span class="p">)</span>
+
+<span class="c"># Create optimization variables.</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">NonNegative</span><span class="p">()</span>
+<span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">NonNegative</span><span class="p">(),</span> <span class="n">NonNegative</span><span class="p">()</span>
+
+<span class="c"># Create second stage problem.</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="o">-</span><span class="n">s</span><span class="o">*</span><span class="n">y</span> <span class="o">-</span> <span class="n">r</span><span class="o">*</span><span class="n">z</span>
+<span class="n">constrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">y</span><span class="o">+</span><span class="n">z</span><span class="o">&lt;=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">&lt;=</span><span class="n">d</span><span class="p">,</span> <span class="n">z</span><span class="o">&lt;=</span><span class="n">d</span><span class="p">]</span>
+<span class="n">p2</span> <span class="o">=</span> <span class="n">Problem</span><span class="p">(</span><span class="n">Minimize</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span> <span class="n">constrs</span><span class="p">)</span>
+<span class="n">Q</span> <span class="o">=</span> <span class="n">partial_optimize</span><span class="p">(</span><span class="n">p2</span><span class="p">,</span> <span class="p">[</span><span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">],</span> <span class="p">[</span><span class="n">x</span><span class="p">])</span>
+
+<span class="c"># Create and solve first stage problem.</span>
+<span class="n">p1</span> <span class="o">=</span> <span class="n">Problem</span><span class="p">(</span><span class="n">Minimize</span><span class="p">(</span><span class="n">c</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">expectation</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">100</span><span class="p">)),</span> <span class="p">[</span><span class="n">x</span><span class="o">&lt;=</span><span class="n">b</span><span class="p">])</span>
+<span class="n">p1</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span></code></pre></div>
+
+<p>Here, <code>partial_optimize</code> takes in a convex optimization <code>Problem</code> and a list of <code>Variable</code>’s to optimize over — in this case, <code>partial_optimize</code> is given the (second stage) <code>Problem</code> named <code>p2</code> and told to optimize (only) over the (second stage) variables <code>y</code> and <code>z</code>.</p>
+
+<h1 id="where-can-i-learn-more">Where can I learn more?</h1>
+
+<ul>
+  <li>The cvxstoc <a href="http://stanford.edu/~boyd/papers/dcsp.html">paper</a> contains much more (mathematical) detail as well as examples.</li>
+  <li>The cvxpy <a href="https://groups.google.com/forum/#!forum/cvxpy">mailing list</a> is a great place to ask questions (regarding cvxpy as well as cvxstoc) — please feel free to get in touch!</li>
+  <li>Please feel free to grab the <a href="https://github.com/alnurali/cvxstoc">source code</a> and contribute!</li>
+</ul>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/alnurali/cvxstoc">cvxstoc</a> is maintained by <a href="https://github.com/alnurali">alnurali</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  </body>
+</html>
+
