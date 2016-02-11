@@ -1,0 +1,101 @@
+API documentation
+=================
+
+Here, we document the main classes and methods in cvxstoc.
+
+``NormalRandomVariable(mean, cov, shape=1)``
+
+- Creates one (or more) normal random variable(s).
+
+- Parameters:
+
+   - ``mean``: either a scalar or a NumPy ``ndarray`` describing the mean.
+   - ``cov``: either a scalar or a NumPy ``ndarray`` describing the covariance (matrix).  If ``mean`` is a scalar, then ``cov`` should be a scalar.  If ``mean`` is a matrix, then ``cov`` should be a positive definite matrix, with number of rows/columns matching the dimension of ``mean``.
+   - ``shape`` (optional): a tuple.  If specified (as a tuple), then ``mean`` and ``cov`` should be scalars, and ``shape`` determines the shape of the returned object comprising i.i.d. normal random variables.
+
+- Returns:
+
+   - one (or more) cvxstoc ``RandomVariable`` object(s).
+
+``CategoricalRandomVariable(vals, probs, shape=1)``
+
+- Creates one (or more) categorical random variable(s).
+
+- Parameters:
+
+   - ``vals``: a list of values.
+   - ``probs``: a list of probabilities (one for each value).
+   - ``shape`` (optional): a tuple that determines the shape of the returned object comprising i.i.d. categorical random variables.
+
+- Returns:
+
+   - one (or more) cvxstoc ``RandomVariable`` object(s).
+
+``UniformRandomVariable(lower, upper, cont=True, shape=1)``
+
+- Creates one (or more) uniform random variable(s).
+
+- Parameters:
+
+   - ``lower``: the lower endpoint of the uniform distribution.
+   - ``upper``: the upper endpoint of the uniform distribution.
+   - ``cont`` (optional): a Boolean.  If ``True``, then a continuous uniform distribution is used, else a discrete distribution is used. 
+   - ``shape`` (optional): a tuple that determines the shape of the returned object comprising i.i.d. uniform random variables.
+
+- Returns:
+
+   - one (or more) cvxstoc ``RandomVariable`` object(s).
+
+``RandomVariable(rv, name=None)``
+
+- Creates a cvxstoc ``RandomVariable`` object.
+
+- Parameters:
+
+   - ``rv``: a PyMC ``Model`` object.
+   - ``name`` (optional): a string describing the (friendly) name of the returned object.
+
+- Returns:
+
+   - a cvxstoc ``RandomVariable`` object.
+
+``expectation(expr, num_samples, num_burnin_samples=0)``
+
+- Constructs a Monte Carlo approximation to the expected value of ``expr``.
+
+- Parameters:
+
+   - ``expr``: a cvxpy ``Expression``.
+   - ``num_samples``: the number of Monte Carlo samples to use when constructing the approximation.
+   - ``num_burnin_samples`` (optional): the number of samples to use for burn-in (this is only useful if sampling from the distribution of ``expr`` requires Markov chain Monte Carlo methods).
+
+- Returns:
+
+   - a cvxpy ``Expression``.  Accessing the ``value`` property on this returned object actually instantiates the object with samples, and returns the (numerical) expected value.
+
+``prob(constr, num_samples)``
+
+- Constructs a (Monte Carlo) approximation to the chance constraint given by ``constr``.
+
+- Parameters:
+
+   - ``constr``: a cvxpy ``Constraint``.
+   - ``num_samples``: the number of Monte Carlo samples to use when constructing the approximation.
+
+- Returns:
+
+   - a cvxpy ``Constraint``.  Accessing the ``value`` property on this returned object actually instantiates the constraint with samples, and returns the fraction of times the constraint is satisfied.
+
+``partial_optimize(prob, opt_vars, dont_opt_vars)``
+
+- Creates a second stage (convex) optimization problem.
+
+- Parameters:
+
+   - ``prob``: a cvxpy ``Problem`` object describing the second stage (convex) optimization problem.
+   - ``opt_vars``: a list of second stage optimization variables.
+   - ``dont_opt_vars``: a list of first stage optimization variables.
+
+- Returns:
+
+   - a cvxstoc ``PartialProblem`` object.

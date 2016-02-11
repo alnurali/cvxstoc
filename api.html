@@ -1,0 +1,278 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>API documentation &mdash; cvxstoc 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/underscore.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="cvxstoc 0.2 documentation" href="index.html" />
+    <link rel="prev" title="Gentle walkthrough" href="walkthru.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="api-documentation">
+<h1>API documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Here, we document the main classes and methods in cvxstoc.</p>
+<p><tt class="docutils literal"><span class="pre">NormalRandomVariable(mean,</span> <span class="pre">cov,</span> <span class="pre">shape=1)</span></tt></p>
+<ul>
+<li><p class="first">Creates one (or more) normal random variable(s).</p>
+</li>
+<li><p class="first">Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><tt class="docutils literal"><span class="pre">mean</span></tt>: either a scalar or a NumPy <tt class="docutils literal"><span class="pre">ndarray</span></tt> describing the mean.</li>
+<li><tt class="docutils literal"><span class="pre">cov</span></tt>: either a scalar or a NumPy <tt class="docutils literal"><span class="pre">ndarray</span></tt> describing the covariance (matrix).  If <tt class="docutils literal"><span class="pre">mean</span></tt> is a scalar, then <tt class="docutils literal"><span class="pre">cov</span></tt> should be a scalar.  If <tt class="docutils literal"><span class="pre">mean</span></tt> is a matrix, then <tt class="docutils literal"><span class="pre">cov</span></tt> should be a positive definite matrix, with number of rows/columns matching the dimension of <tt class="docutils literal"><span class="pre">mean</span></tt>.</li>
+<li><tt class="docutils literal"><span class="pre">shape</span></tt> (optional): a tuple.  If specified (as a tuple), then <tt class="docutils literal"><span class="pre">mean</span></tt> and <tt class="docutils literal"><span class="pre">cov</span></tt> should be scalars, and <tt class="docutils literal"><span class="pre">shape</span></tt> determines the shape of the returned object comprising i.i.d. normal random variables.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">Returns:</p>
+<blockquote>
+<div><ul class="simple">
+<li>one (or more) cvxstoc <tt class="docutils literal"><span class="pre">RandomVariable</span></tt> object(s).</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p><tt class="docutils literal"><span class="pre">CategoricalRandomVariable(vals,</span> <span class="pre">probs,</span> <span class="pre">shape=1)</span></tt></p>
+<ul>
+<li><p class="first">Creates one (or more) categorical random variable(s).</p>
+</li>
+<li><p class="first">Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><tt class="docutils literal"><span class="pre">vals</span></tt>: a list of values.</li>
+<li><tt class="docutils literal"><span class="pre">probs</span></tt>: a list of probabilities (one for each value).</li>
+<li><tt class="docutils literal"><span class="pre">shape</span></tt> (optional): a tuple that determines the shape of the returned object comprising i.i.d. categorical random variables.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">Returns:</p>
+<blockquote>
+<div><ul class="simple">
+<li>one (or more) cvxstoc <tt class="docutils literal"><span class="pre">RandomVariable</span></tt> object(s).</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p><tt class="docutils literal"><span class="pre">UniformRandomVariable(lower,</span> <span class="pre">upper,</span> <span class="pre">cont=True,</span> <span class="pre">shape=1)</span></tt></p>
+<ul>
+<li><p class="first">Creates one (or more) uniform random variable(s).</p>
+</li>
+<li><p class="first">Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><tt class="docutils literal"><span class="pre">lower</span></tt>: the lower endpoint of the uniform distribution.</li>
+<li><tt class="docutils literal"><span class="pre">upper</span></tt>: the upper endpoint of the uniform distribution.</li>
+<li><tt class="docutils literal"><span class="pre">cont</span></tt> (optional): a Boolean.  If <tt class="docutils literal"><span class="pre">True</span></tt>, then a continuous uniform distribution is used, else a discrete distribution is used.</li>
+<li><tt class="docutils literal"><span class="pre">shape</span></tt> (optional): a tuple that determines the shape of the returned object comprising i.i.d. uniform random variables.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">Returns:</p>
+<blockquote>
+<div><ul class="simple">
+<li>one (or more) cvxstoc <tt class="docutils literal"><span class="pre">RandomVariable</span></tt> object(s).</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p><tt class="docutils literal"><span class="pre">RandomVariable(rv,</span> <span class="pre">name=None)</span></tt></p>
+<ul>
+<li><p class="first">Creates a cvxstoc <tt class="docutils literal"><span class="pre">RandomVariable</span></tt> object.</p>
+</li>
+<li><p class="first">Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><tt class="docutils literal"><span class="pre">rv</span></tt>: a PyMC <tt class="docutils literal"><span class="pre">Model</span></tt> object.</li>
+<li><tt class="docutils literal"><span class="pre">name</span></tt> (optional): a string describing the (friendly) name of the returned object.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">Returns:</p>
+<blockquote>
+<div><ul class="simple">
+<li>a cvxstoc <tt class="docutils literal"><span class="pre">RandomVariable</span></tt> object.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p><tt class="docutils literal"><span class="pre">expectation(expr,</span> <span class="pre">num_samples,</span> <span class="pre">num_burnin_samples=0)</span></tt></p>
+<ul>
+<li><p class="first">Constructs a Monte Carlo approximation to the expected value of <tt class="docutils literal"><span class="pre">expr</span></tt>.</p>
+</li>
+<li><p class="first">Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><tt class="docutils literal"><span class="pre">expr</span></tt>: a cvxpy <tt class="docutils literal"><span class="pre">Expression</span></tt>.</li>
+<li><tt class="docutils literal"><span class="pre">num_samples</span></tt>: the number of Monte Carlo samples to use when constructing the approximation.</li>
+<li><tt class="docutils literal"><span class="pre">num_burnin_samples</span></tt> (optional): the number of samples to use for burn-in (this is only useful if sampling from the distribution of <tt class="docutils literal"><span class="pre">expr</span></tt> requires Markov chain Monte Carlo methods).</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">Returns:</p>
+<blockquote>
+<div><ul class="simple">
+<li>a cvxpy <tt class="docutils literal"><span class="pre">Expression</span></tt>.  Accessing the <tt class="docutils literal"><span class="pre">value</span></tt> property on this returned object actually instantiates the object with samples, and returns the (numerical) expected value.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p><tt class="docutils literal"><span class="pre">prob(constr,</span> <span class="pre">num_samples)</span></tt></p>
+<ul>
+<li><p class="first">Constructs a (Monte Carlo) approximation to the chance constraint given by <tt class="docutils literal"><span class="pre">constr</span></tt>.</p>
+</li>
+<li><p class="first">Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><tt class="docutils literal"><span class="pre">constr</span></tt>: a cvxpy <tt class="docutils literal"><span class="pre">Constraint</span></tt>.</li>
+<li><tt class="docutils literal"><span class="pre">num_samples</span></tt>: the number of Monte Carlo samples to use when constructing the approximation.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">Returns:</p>
+<blockquote>
+<div><ul class="simple">
+<li>a cvxpy <tt class="docutils literal"><span class="pre">Constraint</span></tt>.  Accessing the <tt class="docutils literal"><span class="pre">value</span></tt> property on this returned object actually instantiates the constraint with samples, and returns the fraction of times the constraint is satisfied.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p><tt class="docutils literal"><span class="pre">partial_optimize(prob,</span> <span class="pre">opt_vars,</span> <span class="pre">dont_opt_vars)</span></tt></p>
+<ul>
+<li><p class="first">Creates a second stage (convex) optimization problem.</p>
+</li>
+<li><p class="first">Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><tt class="docutils literal"><span class="pre">prob</span></tt>: a cvxpy <tt class="docutils literal"><span class="pre">Problem</span></tt> object describing the second stage (convex) optimization problem.</li>
+<li><tt class="docutils literal"><span class="pre">opt_vars</span></tt>: a list of second stage optimization variables.</li>
+<li><tt class="docutils literal"><span class="pre">dont_opt_vars</span></tt>: a list of first stage optimization variables.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">Returns:</p>
+<blockquote>
+<div><ul class="simple">
+<li>a cvxstoc <tt class="docutils literal"><span class="pre">PartialProblem</span></tt> object.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">cvxstoc</a></h1>
+
+
+
+<p class="blurb">Disciplined convex stochastic programming</p>
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=alnurali&repo=cvxstoc&type=watch&count=true&size=large"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="walkthru.html">Gentle walkthrough</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">API documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="walkthru.html" title="previous chapter">Gentle walkthrough</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, alnurali.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.2.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+      |
+      <a href="sources/api.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-37400115-2']);
+      _gaq.push(['_setDomainName', 'none']);
+      _gaq.push(['_setAllowLinker', true]);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+    
+  </body>
+</html>
