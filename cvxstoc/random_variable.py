@@ -93,11 +93,14 @@ class RandomVariableFactory:
         RandomVariableFactory._id += 1
         return RandomVariableFactory._id
 
-def NormalRandomVariable(mu, cov, shape=1):
-    return RandomVariableFactory().create_normal_rv(mu, cov, shape)
+def NormalRandomVariable(mean, cov, shape=1):
+    return RandomVariableFactory().create_normal_rv(mu=mean, cov=cov, shape=shape)
 
 def CategoricalRandomVariable(vals, probs, shape=1):
-    return RandomVariableFactory().create_categorical_rv(vals, probs, shape)
+    return RandomVariableFactory().create_categorical_rv(vals=vals, probs=probs, shape=shape)
+
+def UniformRandomVariable(lower=0, upper=1, cont=True, shape=1):
+    return RandomVariableFactory().create_unif_rv(lower=lower, upper=upper, cont=cont, shape=shape)
 
 class RandomVariable(cvxpy.expressions.constants.parameter.Parameter):
     def __init__(self, rv=None, model=None, name=None, val_map=None, metadata=None):        # model == pymc.Model object

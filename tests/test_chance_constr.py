@@ -2,7 +2,6 @@ import unittest
 import time
 import math
 
-import numpy
 from matplotlib import pyplot
 from matplotlib.backends.backend_pdf import PdfPages
 import pymc
@@ -10,10 +9,13 @@ from scipy.linalg import sqrtm
 import scipy.stats
 
 from cvxpy import CVXOPT
+from cvxstoc import NormalRandomVariable, prob
+from cvxpy.expressions.variables import Variable
 from cvxpy.atoms import *
-from cvxpy.expressions.variables import Variable, NonNegative
 from cvxpy import Minimize, Maximize, Problem
-from cvxstoc import RandomVariable, RandomVariableFactory, expectation, prob, Phi
+import numpy
+
+from cvxpy.expressions.variables import NonNegative
 
 
 class TestChanceConstr(unittest.TestCase):
@@ -36,7 +38,7 @@ class TestChanceConstr(unittest.TestCase):
 
         mu = numpy.zeros(n)
         Sigma = numpy.eye(n)
-        a = RandomVariableFactory().create_normal_rv(mu, Sigma)
+        a = NormalRandomVariable(mu, Sigma)
 
         b = numpy.random.randn()
 
@@ -47,7 +49,7 @@ class TestChanceConstr(unittest.TestCase):
         self.assert_feas(p)
 
     def test_compute_conserv_approx_to_prob(self):
-        omega = RandomVariableFactory().create_normal_rv(0,1)
+        omega = NormalRandomVariable(0,1)
         event = exp(omega) <= 0.5
         num_samples = 50
         self.assertAlmostEqual(1,1)
@@ -78,7 +80,7 @@ class TestChanceConstr(unittest.TestCase):
         Sigma = 0.1*numpy.eye(n)
         for i in range(m):
             mu = numpy.array(X[i])[0]
-            x = RandomVariableFactory().create_normal_rv(mu, Sigma)
+            x = NormalRandomVariable(mu, Sigma)
             chance = prob(-y[i]*(w.T*x+b) >= (xi[i]-1), ns)
             constr += [chance <= eta]
 
@@ -107,7 +109,7 @@ class TestChanceConstr(unittest.TestCase):
         n = numpy.random.randint(1,10)
         pbar = numpy.random.randn(n)
         Sigma = numpy.eye(n)
-        p = RandomVariableFactory().create_normal_rv(pbar,Sigma)
+        p = NormalRandomVariable(pbar,Sigma)
 
         o = numpy.ones((n,1))
         beta = 0.05
@@ -135,7 +137,7 @@ class TestChanceConstr(unittest.TestCase):
         c = numpy.random.randn(n)
         P, q, r = numpy.eye(n), numpy.random.randn(n), numpy.random.randn()
         mu, Sigma = numpy.zeros(n), 0.1*numpy.eye(n)
-        omega = RandomVariableFactory().create_normal_rv(mu, Sigma)
+        omega = NormalRandomVariable(mu, Sigma)
         m, eta = 100, 0.95
 
         # Create and solve optimization problem.

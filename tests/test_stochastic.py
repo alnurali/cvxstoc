@@ -13,7 +13,7 @@ from cvxpy.atoms import *
 from cvxpy.transforms import *
 from cvxpy.expressions.variables import Variable, NonNegative
 from cvxpy import Minimize, Maximize, Problem, utilities
-from cvxstoc import RandomVariable, RandomVariableFactory, expectation, CategoricalRandomVariable
+from cvxstoc import RandomVariable, RandomVariableFactory, expectation, UniformRandomVariable, CategoricalRandomVariable
 
 
 class WordCountVecRV(RandomVariable):
