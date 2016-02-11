@@ -48,8 +48,8 @@
 <li><p class="first">Parameters:</p>
 <blockquote>
 <div><ul class="simple">
-<li><tt class="docutils literal"><span class="pre">mean</span></tt>: either a scalar or a NumPy <tt class="docutils literal"><span class="pre">ndarray</span></tt> describing the mean.</li>
-<li><tt class="docutils literal"><span class="pre">cov</span></tt>: either a scalar or a NumPy <tt class="docutils literal"><span class="pre">ndarray</span></tt> describing the covariance (matrix).  If <tt class="docutils literal"><span class="pre">mean</span></tt> is a scalar, then <tt class="docutils literal"><span class="pre">cov</span></tt> should be a scalar.  If <tt class="docutils literal"><span class="pre">mean</span></tt> is a matrix, then <tt class="docutils literal"><span class="pre">cov</span></tt> should be a positive definite matrix, with number of rows/columns matching the dimension of <tt class="docutils literal"><span class="pre">mean</span></tt>.</li>
+<li><tt class="docutils literal"><span class="pre">mean</span></tt>: either a scalar or a NumPy <tt class="docutils literal"><span class="pre">ndarray</span></tt> describing the mean of the random variable(s).</li>
+<li><tt class="docutils literal"><span class="pre">cov</span></tt>: either a scalar or a NumPy <tt class="docutils literal"><span class="pre">ndarray</span></tt> describing the covariance (matrix) of the random variable(s).  If <tt class="docutils literal"><span class="pre">mean</span></tt> is a scalar, then <tt class="docutils literal"><span class="pre">cov</span></tt> should be a scalar.  If <tt class="docutils literal"><span class="pre">mean</span></tt> is a vector, then <tt class="docutils literal"><span class="pre">cov</span></tt> should be a positive definite matrix with number of rows/columns matching the dimension of <tt class="docutils literal"><span class="pre">mean</span></tt>.</li>
 <li><tt class="docutils literal"><span class="pre">shape</span></tt> (optional): a tuple.  If specified (as a tuple), then <tt class="docutils literal"><span class="pre">mean</span></tt> and <tt class="docutils literal"><span class="pre">cov</span></tt> should be scalars, and <tt class="docutils literal"><span class="pre">shape</span></tt> determines the shape of the returned object comprising i.i.d. normal random variables.</li>
 </ul>
 </div></blockquote>
@@ -57,7 +57,7 @@
 <li><p class="first">Returns:</p>
 <blockquote>
 <div><ul class="simple">
-<li>one (or more) cvxstoc <tt class="docutils literal"><span class="pre">RandomVariable</span></tt> object(s).</li>
+<li>one (or more) cvxstoc <tt class="docutils literal"><span class="pre">RandomVariable</span></tt> object(s) (cvxstoc&#8217;s <tt class="docutils literal"><span class="pre">RandomVariable</span></tt> object inherits from cvxpy&#8217;s <tt class="docutils literal"><span class="pre">Parameter</span></tt> object).</li>
 </ul>
 </div></blockquote>
 </li>
@@ -78,7 +78,7 @@
 <li><p class="first">Returns:</p>
 <blockquote>
 <div><ul class="simple">
-<li>one (or more) cvxstoc <tt class="docutils literal"><span class="pre">RandomVariable</span></tt> object(s).</li>
+<li>one (or more) cvxstoc <tt class="docutils literal"><span class="pre">RandomVariable</span></tt> object(s) (cvxstoc&#8217;s <tt class="docutils literal"><span class="pre">RandomVariable</span></tt> object inherits from cvxpy&#8217;s <tt class="docutils literal"><span class="pre">Parameter</span></tt> object).</li>
 </ul>
 </div></blockquote>
 </li>
@@ -100,7 +100,7 @@
 <li><p class="first">Returns:</p>
 <blockquote>
 <div><ul class="simple">
-<li>one (or more) cvxstoc <tt class="docutils literal"><span class="pre">RandomVariable</span></tt> object(s).</li>
+<li>one (or more) cvxstoc <tt class="docutils literal"><span class="pre">RandomVariable</span></tt> object(s) (cvxstoc&#8217;s <tt class="docutils literal"><span class="pre">RandomVariable</span></tt> object inherits from cvxpy&#8217;s <tt class="docutils literal"><span class="pre">Parameter</span></tt> object).</li>
 </ul>
 </div></blockquote>
 </li>
@@ -120,7 +120,7 @@
 <li><p class="first">Returns:</p>
 <blockquote>
 <div><ul class="simple">
-<li>a cvxstoc <tt class="docutils literal"><span class="pre">RandomVariable</span></tt> object.</li>
+<li>one (or more) cvxstoc <tt class="docutils literal"><span class="pre">RandomVariable</span></tt> object(s) (cvxstoc&#8217;s <tt class="docutils literal"><span class="pre">RandomVariable</span></tt> object inherits from cvxpy&#8217;s <tt class="docutils literal"><span class="pre">Parameter</span></tt> object).</li>
 </ul>
 </div></blockquote>
 </li>
@@ -182,7 +182,7 @@
 <li><p class="first">Returns:</p>
 <blockquote>
 <div><ul class="simple">
-<li>a cvxstoc <tt class="docutils literal"><span class="pre">PartialProblem</span></tt> object.</li>
+<li>a cvxstoc <tt class="docutils literal"><span class="pre">PartialProblem</span></tt> object (which inherits from cvxpy&#8217;s <tt class="docutils literal"><span class="pre">Expression</span></tt> object).</li>
 </ul>
 </div></blockquote>
 </li>

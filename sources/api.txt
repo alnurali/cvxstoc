@@ -9,13 +9,13 @@ Here, we document the main classes and methods in cvxstoc.
 
 - Parameters:
 
-   - ``mean``: either a scalar or a NumPy ``ndarray`` describing the mean.
-   - ``cov``: either a scalar or a NumPy ``ndarray`` describing the covariance (matrix).  If ``mean`` is a scalar, then ``cov`` should be a scalar.  If ``mean`` is a matrix, then ``cov`` should be a positive definite matrix, with number of rows/columns matching the dimension of ``mean``.
+   - ``mean``: either a scalar or a NumPy ``ndarray`` describing the mean of the random variable(s).
+   - ``cov``: either a scalar or a NumPy ``ndarray`` describing the covariance (matrix) of the random variable(s).  If ``mean`` is a scalar, then ``cov`` should be a scalar.  If ``mean`` is a vector, then ``cov`` should be a positive definite matrix with number of rows/columns matching the dimension of ``mean``.
    - ``shape`` (optional): a tuple.  If specified (as a tuple), then ``mean`` and ``cov`` should be scalars, and ``shape`` determines the shape of the returned object comprising i.i.d. normal random variables.
 
 - Returns:
 
-   - one (or more) cvxstoc ``RandomVariable`` object(s).
+   - one (or more) cvxstoc ``RandomVariable`` object(s) (cvxstoc's ``RandomVariable`` object inherits from cvxpy's ``Parameter`` object).
 
 ``CategoricalRandomVariable(vals, probs, shape=1)``
 
@@ -29,7 +29,7 @@ Here, we document the main classes and methods in cvxstoc.
 
 - Returns:
 
-   - one (or more) cvxstoc ``RandomVariable`` object(s).
+   - one (or more) cvxstoc ``RandomVariable`` object(s) (cvxstoc's ``RandomVariable`` object inherits from cvxpy's ``Parameter`` object).
 
 ``UniformRandomVariable(lower, upper, cont=True, shape=1)``
 
@@ -44,7 +44,7 @@ Here, we document the main classes and methods in cvxstoc.
 
 - Returns:
 
-   - one (or more) cvxstoc ``RandomVariable`` object(s).
+   - one (or more) cvxstoc ``RandomVariable`` object(s) (cvxstoc's ``RandomVariable`` object inherits from cvxpy's ``Parameter`` object).
 
 ``RandomVariable(rv, name=None)``
 
@@ -57,7 +57,7 @@ Here, we document the main classes and methods in cvxstoc.
 
 - Returns:
 
-   - a cvxstoc ``RandomVariable`` object.
+   - one (or more) cvxstoc ``RandomVariable`` object(s) (cvxstoc's ``RandomVariable`` object inherits from cvxpy's ``Parameter`` object).
 
 ``expectation(expr, num_samples, num_burnin_samples=0)``
 
@@ -98,4 +98,4 @@ Here, we document the main classes and methods in cvxstoc.
 
 - Returns:
 
-   - a cvxstoc ``PartialProblem`` object.
+   - a cvxstoc ``PartialProblem`` object (which inherits from cvxpy's ``Expression`` object).
