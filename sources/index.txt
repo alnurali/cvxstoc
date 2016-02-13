@@ -10,14 +10,14 @@ Quick start
 
 What is cvxstoc?
 ----------------
-cvxstoc is a Python package that makes it easy to code and solve *stochastic optimization problems*, i.e., `convex optimization problems <http://stanford.edu/class/ee364a/lectures/intro.pdf>`_ that include random variables.
+cvxstoc is a Python package that makes it easy to code and solve `stochastic optimization problems <http://stanford.edu/class/ee364a/lectures/stoch_prog.pdf>`_, i.e., `convex optimization problems <http://stanford.edu/class/ee364a/lectures/intro.pdf>`_ that include random variables.
 
 What can I do with cvxstoc?
 ---------------------------
 
-Here is a quick example of the kinds of problems you can tackle with cvxstoc (see the `gentle walkthrough <walkthru.html>`_ for more examples).
+Here is a quick run through of the kinds of problems you can tackle with cvxstoc (see the `gentle walkthrough <walkthru.html>`_ for more examples).
 
-Suppose we are interested in a stochastic variation on the usual `portfolio optimization <https://en.wikipedia.org/wiki/Portfolio_optimization>`_ problem, i.e., we wish to allocate our wealth across :math:`n` assets such that the returns on our investments are (on average) maximized, so long as we keep the probability of a (catastrophic) loss as low as possible; we model our investment choices as a vector :math:`x \in {\bf R}^n_+` (we require that the components of :math:`x` sum to one), the (uncertain) price change of each asset as a vector :math:`p \in {\bf R}^n \sim \textrm{Normal}(\mu, \Sigma)` for simplicity, and our loss threshold and tolerance as :math:`\alpha , \beta`, respectively (typically, :math:`\alpha` is negative and :math:`\beta` is small, e.g., 0.05).
+Suppose we are interested in a stochastic variation on the usual `portfolio optimization <https://en.wikipedia.org/wiki/Portfolio_optimization>`_ problem, i.e., we wish to allocate our wealth across :math:`n` assets such that the returns on our investments are (on average) maximized, so long as we keep the probability of a (catastrophic) loss as low as possible; we model our investment choices as a vector :math:`x \in {\bf R}^n_+` (we require that the components of :math:`x` sum to one), the (uncertain) price change of each asset as a vector :math:`p \in {\bf R}^n \sim \textrm{Normal}(\mu, \Sigma)` for simplicity, and our loss threshold and tolerance as :math:`\alpha` and :math:`\beta`, respectively (typically, :math:`\alpha` is negative and :math:`\beta` is small, e.g., 0.05).
 
 These considerations lead us to the following (convex) optimization problem:
 

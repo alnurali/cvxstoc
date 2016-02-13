@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>API documentation &mdash; cvxstoc 0.2 documentation</title>
+    <title>API documentation &mdash; cvxstoc 0.2.1 documentation</title>
     
     <link rel="stylesheet" href="static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2',
+        VERSION:     '0.2.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="static/underscore.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="cvxstoc 0.2 documentation" href="index.html" />
+    <link rel="top" title="cvxstoc 0.2.1 documentation" href="index.html" />
     <link rel="prev" title="Gentle walkthrough" href="walkthru.html" />
    
   
@@ -132,7 +132,7 @@
 <li><p class="first">Parameters:</p>
 <blockquote>
 <div><ul class="simple">
-<li><tt class="docutils literal"><span class="pre">expr</span></tt>: a cvxpy <tt class="docutils literal"><span class="pre">Expression</span></tt>.</li>
+<li><tt class="docutils literal"><span class="pre">expr</span></tt>: a cvxpy <tt class="docutils literal"><span class="pre">Expression</span></tt> (usually) containing one (or more) cvxstoc <tt class="docutils literal"><span class="pre">RandomVariable</span></tt> object(s).</li>
 <li><tt class="docutils literal"><span class="pre">num_samples</span></tt>: the number of Monte Carlo samples to use when constructing the approximation.</li>
 <li><tt class="docutils literal"><span class="pre">num_burnin_samples</span></tt> (optional): the number of samples to use for burn-in (this is only useful if sampling from the distribution of <tt class="docutils literal"><span class="pre">expr</span></tt> requires Markov chain Monte Carlo methods).</li>
 </ul>
@@ -148,12 +148,12 @@
 </ul>
 <p><tt class="docutils literal"><span class="pre">prob(constr,</span> <span class="pre">num_samples)</span></tt></p>
 <ul>
-<li><p class="first">Constructs a (Monte Carlo) approximation to the chance constraint given by <tt class="docutils literal"><span class="pre">constr</span></tt>.</p>
+<li><p class="first">Constructs a (Monte Carlo) approximation to the chance constraint described by <tt class="docutils literal"><span class="pre">constr</span></tt>.</p>
 </li>
 <li><p class="first">Parameters:</p>
 <blockquote>
 <div><ul class="simple">
-<li><tt class="docutils literal"><span class="pre">constr</span></tt>: a cvxpy <tt class="docutils literal"><span class="pre">Constraint</span></tt>.</li>
+<li><tt class="docutils literal"><span class="pre">constr</span></tt>: a cvxpy <tt class="docutils literal"><span class="pre">Constraint</span></tt> (usually) containing one (or more) cvxstoc <tt class="docutils literal"><span class="pre">RandomVariable</span></tt> object(s).</li>
 <li><tt class="docutils literal"><span class="pre">num_samples</span></tt>: the number of Monte Carlo samples to use when constructing the approximation.</li>
 </ul>
 </div></blockquote>
@@ -161,7 +161,8 @@
 <li><p class="first">Returns:</p>
 <blockquote>
 <div><ul class="simple">
-<li>a cvxpy <tt class="docutils literal"><span class="pre">Constraint</span></tt>.  Accessing the <tt class="docutils literal"><span class="pre">value</span></tt> property on this returned object actually instantiates the constraint with samples, and returns the fraction of times the constraint is satisfied.</li>
+<li>when combined with an inequality, e.g., <tt class="docutils literal"><span class="pre">prob(constr=my_constr,</span> <span class="pre">num_samples=my_num_samples)</span> <span class="pre">&lt;=</span> <span class="pre">my_prob</span></tt>: a cvxpy <tt class="docutils literal"><span class="pre">Constraint</span></tt>.  Accessing the <tt class="docutils literal"><span class="pre">value</span></tt> property on this returned object actually instantiates the constraint with samples, and returns the fraction of times the constraint is satisfied.</li>
+<li>when <em>not</em> combined with an inequality: a cvxstoc <tt class="docutils literal"><span class="pre">prob</span></tt> object (which is not so useful on its own).</li>
 </ul>
 </div></blockquote>
 </li>
@@ -173,9 +174,9 @@
 <li><p class="first">Parameters:</p>
 <blockquote>
 <div><ul class="simple">
-<li><tt class="docutils literal"><span class="pre">prob</span></tt>: a cvxpy <tt class="docutils literal"><span class="pre">Problem</span></tt> object describing the second stage (convex) optimization problem.</li>
-<li><tt class="docutils literal"><span class="pre">opt_vars</span></tt>: a list of second stage optimization variables.</li>
-<li><tt class="docutils literal"><span class="pre">dont_opt_vars</span></tt>: a list of first stage optimization variables.</li>
+<li><tt class="docutils literal"><span class="pre">prob</span></tt>: a cvxpy <tt class="docutils literal"><span class="pre">Problem</span></tt> object (usually) containing one (or more) cvxstoc <tt class="docutils literal"><span class="pre">RandomVariable</span></tt> object(s) describing the second stage (convex) optimization problem.</li>
+<li><tt class="docutils literal"><span class="pre">opt_vars</span></tt>: a list of second stage optimization cvxpy <tt class="docutils literal"><span class="pre">Variables</span></tt>.</li>
+<li><tt class="docutils literal"><span class="pre">dont_opt_vars</span></tt>: a list of first stage optimization cvxpy <tt class="docutils literal"><span class="pre">Variables</span></tt>.</li>
 </ul>
 </div></blockquote>
 </li>

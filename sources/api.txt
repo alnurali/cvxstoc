@@ -65,7 +65,7 @@ Here, we document the main classes and methods in cvxstoc.
 
 - Parameters:
 
-   - ``expr``: a cvxpy ``Expression``.
+   - ``expr``: a cvxpy ``Expression`` (usually) containing one (or more) cvxstoc ``RandomVariable`` object(s).
    - ``num_samples``: the number of Monte Carlo samples to use when constructing the approximation.
    - ``num_burnin_samples`` (optional): the number of samples to use for burn-in (this is only useful if sampling from the distribution of ``expr`` requires Markov chain Monte Carlo methods).
 
@@ -75,16 +75,18 @@ Here, we document the main classes and methods in cvxstoc.
 
 ``prob(constr, num_samples)``
 
-- Constructs a (Monte Carlo) approximation to the chance constraint given by ``constr``.
+- Constructs a (Monte Carlo) approximation to the chance constraint described by ``constr``.
 
 - Parameters:
 
-   - ``constr``: a cvxpy ``Constraint``.
+   - ``constr``: a cvxpy ``Constraint`` (usually) containing one (or more) cvxstoc ``RandomVariable`` object(s).
    - ``num_samples``: the number of Monte Carlo samples to use when constructing the approximation.
 
 - Returns:
 
-   - a cvxpy ``Constraint``.  Accessing the ``value`` property on this returned object actually instantiates the constraint with samples, and returns the fraction of times the constraint is satisfied.
+   - when combined with an inequality, e.g., ``prob(constr=my_constr, num_samples=my_num_samples) <= my_prob``: a cvxpy ``Constraint``.  Accessing the ``value`` property on this returned object actually instantiates the constraint with samples, and returns the fraction of times the constraint is satisfied.
+
+   - when *not* combined with an inequality: a cvxstoc ``prob`` object (which is not so useful on its own).
 
 ``partial_optimize(prob, opt_vars, dont_opt_vars)``
 
@@ -92,9 +94,9 @@ Here, we document the main classes and methods in cvxstoc.
 
 - Parameters:
 
-   - ``prob``: a cvxpy ``Problem`` object describing the second stage (convex) optimization problem.
-   - ``opt_vars``: a list of second stage optimization variables.
-   - ``dont_opt_vars``: a list of first stage optimization variables.
+   - ``prob``: a cvxpy ``Problem`` object (usually) containing one (or more) cvxstoc ``RandomVariable`` object(s) describing the second stage (convex) optimization problem.
+   - ``opt_vars``: a list of second stage optimization cvxpy ``Variables``.
+   - ``dont_opt_vars``: a list of first stage optimization cvxpy ``Variables``.
 
 - Returns:
 

@@ -28,7 +28,7 @@ In cvxstoc, we can compute the sample mean like so (repeating some of the previo
    :language: python
    :lines: 4,18-19
 
-Here, "100" specifies the number of samples to use when computing the sample mean --- we could have specified any natural number instead.  As might be expected, ``sample_mean`` stores the (scalar) sample mean.
+Here, ``100`` specifies the number of samples to use when computing the sample mean --- we could have specified any natural number instead.  As might be expected, ``sample_mean`` stores the (scalar) sample mean.
 
 Indeed, if we execute this code for various values of the number of samples to use, and plot the resulting ``sample_mean`` values, we get this (confirming our intuition):
 

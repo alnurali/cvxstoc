@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Gentle walkthrough &mdash; cvxstoc 0.2 documentation</title>
+    <title>Gentle walkthrough &mdash; cvxstoc 0.2.1 documentation</title>
     
     <link rel="stylesheet" href="static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2',
+        VERSION:     '0.2.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="static/underscore.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="cvxstoc 0.2 documentation" href="index.html" />
+    <link rel="top" title="cvxstoc 0.2.1 documentation" href="index.html" />
     <link rel="next" title="API documentation" href="api.html" />
     <link rel="prev" title="Quick start" href="index.html" />
    
@@ -63,7 +63,7 @@
 <span class="n">sample_mean</span> <span class="o">=</span> <span class="n">expectation</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
 </pre></div>
 </div>
-<p>Here, &#8220;100&#8221; specifies the number of samples to use when computing the sample mean &#8212; we could have specified any natural number instead.  As might be expected, <tt class="docutils literal"><span class="pre">sample_mean</span></tt> stores the (scalar) sample mean.</p>
+<p>Here, <tt class="docutils literal"><span class="pre">100</span></tt> specifies the number of samples to use when computing the sample mean &#8212; we could have specified any natural number instead.  As might be expected, <tt class="docutils literal"><span class="pre">sample_mean</span></tt> stores the (scalar) sample mean.</p>
 <p>Indeed, if we execute this code for various values of the number of samples to use, and plot the resulting <tt class="docutils literal"><span class="pre">sample_mean</span></tt> values, we get this (confirming our intuition):</p>
 <img alt="images/fig.png" class="align-center" src="images/fig.png" />
 <p>From this plot, we can see that the sample mean occasionally jumps above zero; so, one thing we might be further curious about is the probability that the sample mean (as a function of the number of samples) indeed lies above zero, i.e.,</p>
