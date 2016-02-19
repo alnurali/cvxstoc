@@ -51,5 +51,5 @@ Where can I learn more about cvxstoc?
 
 - See the `gentle walkthrough <walkthru.html>`_.
 - The cvxstoc `paper <http://stanford.edu/~boyd/papers/dcsp.html>`_ contains much more (mathematical) detail as well as examples.
-- The cvxpy `mailing list <https://groups.google.com/forum/#!forum/cvxpy>`_ is a great place to ask questions (regarding cvxpy as well as cvxstoc) --- please feel free to get in touch!
+- The `cvxpy <mailto:cvxpy@googlegroups.com>`_ and/or `cvxstoc <mailto:cvxstoc@googlegroups.com>`_ email lists are great places to ask questions --- please feel free to get in touch!  You can also go ahead and create an `issue <https://github.com/alnurali/cvxstoc/issues>`_.
 - Please feel free to grab the `source code <https://github.com/alnurali/cvxstoc>`_ and contribute!
