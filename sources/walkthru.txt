@@ -100,7 +100,7 @@ More generally, cvxstoc can handle *convex stochastic optimization problems*, i.
    \end{equation}
    :label: sp
 
-where :math:`f_i : {\bf R}^n \times {\bf R}^q \rightarrow {\bf R}, \; i=0,\ldots,m` are convex functions in :math:`x` for each value of a random variable :math:`\omega \in {\bf R}^q`, and :math:`h_i : {\bf R}^n \rightarrow {\bf R}, \; i=1,\ldots,p` are (deterministic) affine functions; since expectations preserve convexity, the objective and inequality constraint functions in :eq:`sp` are (also) convex in :math:`x`, making :eq:`sp` a convex optimization problem.  See Chaps. 3-4 of `Convex Optimization <http://web.stanford.edu/~boyd/cvxbook/>`_ if you need more background here.
+where :math:`f_i : {\bf R}^n \times {\bf R}^q \rightarrow {\bf R}, \; i=0,\ldots,m` are convex functions in :math:`x` for each value of a random variable :math:`\omega \in {\bf R}^q`, and :math:`h_i : {\bf R}^n \rightarrow {\bf R}, \; i=1,\ldots,p` are (deterministic) affine functions; since expectations preserve convexity, the objective and inequality constraint functions in :eq:`sp` are (also) convex in :math:`x`, making :eq:`sp` a convex optimization problem.  See Chapters 3-4 of `Convex Optimization <http://web.stanford.edu/~boyd/cvxbook/>`_ if you need more background here.
 
 Note that cvxstoc handles manipulating problems behind the scenes into standard form so you don't have to, and also checks convexity by leveraging the `disciplined convex programming framework <http://dcp.stanford.edu/>`_.
 
