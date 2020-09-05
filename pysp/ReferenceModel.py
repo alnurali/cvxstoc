@@ -4,20 +4,25 @@ from coopr.pyomo import *
 def obj_rule(model):
     return model.FirstStageCost + model.SecondStageCost
 
+
 def ComputeFirstStageCost_rule(model):
-    return (model.FirstStageCost - (model.b*model.x)) == 0
+    return (model.FirstStageCost - (model.b * model.x)) == 0
+
 
 def ComputeSecondStageCost_rule(model):
-    return (model.SecondStageCost - (-model.s*model.y1 - model.r*model.y2)) == 0
+    return (model.SecondStageCost - (-model.s * model.y1 - model.r * model.y2)) == 0
+
 
 def constr1_rule(model):
-    return (model.y1+model.y2) <= model.x
+    return (model.y1 + model.y2) <= model.x
+
 
 def constr2_rule(model, i):
     return 0 <= model.y1 and model.y1 <= model.d[i]
 
+
 # Initialize problem data
-model = AbstractModel()    
+model = AbstractModel()
 
 model.b = Param()
 
